@@ -1,0 +1,36 @@
+{
+  "all": {
+    "get": {
+      "users": {
+        "logout": "all",
+        "my_profile": "all"
+      }
+    },
+    "post": {
+      "users": {
+        "login": "all",
+        "register": "all"
+      }
+    
+    },
+    "put": {
+      "users": {
+        "change_password": "all",
+        "update_profile": "all"
+      }
+    }
+  },
+  "authorization_ignore": [
+    "my_profile"
+  ],
+  "ignore": [
+    "login",
+    "register",
+    "list_contry",
+    "settings"
+  ],
+  "list_page": [
+    "/settings",
+    "/logout"
+  ]
+}
