@@ -47,7 +47,7 @@ app.use(function (req, res, next) {
 });
 
 app.all('/client/:act',[middleware.verifyToken, middleware.check], async function (request, response) {
-    console.log('ajavdvdvj')
+  
     let dataReponse = null;
     let dataError = null;
     try {
@@ -58,6 +58,7 @@ app.all('/client/:act',[middleware.verifyToken, middleware.check], async functio
         /** @namespace request.files */
         request.body.files = request.files ? request.files : '';
         if (authMethod) {
+         
             let controller = require('./app/modules/' + act + '/controller');
             if ((controller) && (controller[mod])) {
                 let query = request.body;
@@ -66,9 +67,7 @@ app.all('/client/:act',[middleware.verifyToken, middleware.check], async functio
                 query.device = request.device;
                 try {
                     dataReponse = await controller[mod](query);
-                    if (mod == "login" && dataReponse.status) {
-                        request.session.token = dataReponse.data.token
-                    }
+                 
                 } catch (ex) {
                     console.log(ex);
                     dataReponse = { status: false, msg: "error", code: 700, data: [] };
@@ -86,7 +85,7 @@ app.all('/client/:act',[middleware.verifyToken, middleware.check], async functio
     response.send(dataReponse)
 });
 app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin],async function (request, response) {
-    console.log('ajaj admin')
+ 
     let dataReponse = null;
     let dataError = null;
     try {
@@ -97,7 +96,7 @@ app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin],async funct
         /** @namespace request.files */
         request.body.files = request.files ? request.files : '';
         if (authMethod) {
-            let controller = require('./app/modules/' + act + '/controller');
+            let controller = require('./app/admin/' + act + '/controller');
             if ((controller) && (controller[mod])) {
                 let query = request.body;
                 query.param = request.query;
@@ -105,9 +104,7 @@ app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin],async funct
                 query.device = request.device;
                 try {
                     dataReponse = await controller[mod](query);
-                    if (mod == "login" && dataReponse.status) {
-                        request.session.token = dataReponse.data.token
-                    }
+                   
                 } catch (ex) {
                     console.log(ex);
                     dataReponse = { status: false, msg: "error", code: 700, data: [] };
@@ -128,5 +125,3 @@ server.listen(config.SPort, function () {
     console.log("API Init Completed in Port " + config.SPort);
 
 })
-
-// EMEFC!&25MyZrUd  157.230.27.124

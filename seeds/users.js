@@ -11,7 +11,6 @@ exports.seed = function(knex) {
           display_name: 'Admin Duc',
           email: "danghung020195@gmail.com",
           password: md5(md5("123456")),
-          country: "VN",
           address: "Ho Chi Minh",
           gender: 1,
           status: 1,

@@ -16,7 +16,6 @@ exports.logout = async function (query) {
 exports.register = async function (query) {
     let rules =  {
         display_name: "required|maxLength:255",
-        country: "required|integer",
         username: "required|email|maxLength:255",
         password: "required",
         re_password: "required|same:password",

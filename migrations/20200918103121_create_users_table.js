@@ -13,7 +13,6 @@ exports.up = function (knex) {
                 table.integer('level', 0).nullable();
                 table.integer('status', 1).defaultTo(0);
                 table.integer('gender', 1).nullable();
-                table.integer('country', 20).unsigned().nullable();
                 table.text('find_raw').nullable();
                 table.timestamp('created_at').defaultTo(knex.fn.now());
                 table.timestamp('updated_at').defaultTo(knex.fn.now());

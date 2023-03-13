@@ -24,7 +24,7 @@ module.exports = {
     connection: {
       database: 'nha_thue',
       user:     'root',
-      password: ''
+      password: '123123'
     },
     pool: {
       min: 2,
@@ -40,8 +40,8 @@ module.exports = {
     client: 'mysql',
     connection: {
       database: 'nha_thue',
-      user:     'username',
-      password: 'password'
+      user:     'root',
+      password: '123123'
     },
     pool: {
       min: 2,

@@ -1,10 +1,8 @@
 const md5 = require('md5');
 const jwt = require('jsonwebtoken');
 const userRes = require("./repository");
-const login_history = require("../history_login/repository");
-const { query } = require('express');
-const IPinfo = require("node-ipinfo");
-const ipinfo = new IPinfo('b9cdc9ee5a59d8');
+
+
 
 const URep = new userRes();
 
@@ -21,37 +19,16 @@ exports.login = async function (query) {
     //check login
     let checkUser = await URep.check_email(query.username);
     if (!checkUser) {
-        await login_history.insert({
-            username: query.username,
-            status: 0,
-            request_at: new Date(),
-            ip_request: query.clientIp,
-            device: query.device.type,
-            code: 654
-        })
+      
         return {status: false, msg: "error", code: 654, data: []};
     }
-    if (checkUser.status == config.constant.USER.STATUS.Unactive) {
-        await login_history.insert({
-            username: query.username,
-            status: 0,
-            request_at: new Date(),
-            ip_request: query.clientIp,
-            device: query.device.type,
-            code: 675
-        })
+    if (checkUser.status == 0) {
+       
         return {status: false, msg: "error", code: 675, data: []};
     }
 
     if (md5(query.password) !== checkUser.password) {
-        await login_history.insert({
-            username: query.username,
-            status: 0,
-            request_at: new Date(),
-            ip_request: query.clientIp,
-            device: query.device.type,
-            code: 655
-        })
+       
         return {status: false, msg: "error", code: 655, data: []};
     }
 
@@ -61,18 +38,8 @@ exports.login = async function (query) {
         display_name: checkUser.display_name,
     };
     let token = await jwt.sign({dataMain: dataCheckUsername}, config.keyJWT,  { expiresIn: '1h' });
-    let info = await ipinfo.lookupIp(query.clientIp).catch(function(err) {})
 
-    await login_history.insert({
-        username: query.username,
-        status: 1,
-        request_at: new Date(),
-        ip_request: query.clientIp,
-        device: query.device.type,
-        code: 0,
-        info: info ? JSON.stringify(info) : ""
-
-    })
+  
     // return result
     return {
         status: true,
@@ -107,9 +74,9 @@ exports.register = async (query) => {
             password: md5(query.password),
             phone: query.phone,
             ref: ref,
-            country: query.country,
             created_at: format.date(),
-            status: config.constant.USER.STATUS.Active,
+            status: 1,
+            level:0,
             gender: query.gender,
         };
 
