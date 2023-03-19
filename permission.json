@@ -4,19 +4,34 @@
       "users": {
         "logout": "all",
         "my_profile": "all"
+      },
+      "build": {
+        "list": "all"
+      },
+      "location":{
+        "list_province":"all",
+        "list_city":"all"
       }
     },
     "post": {
       "users": {
         "login": "all",
         "register": "all"
+      },
+      "build": {
+        "addbuild": "1,2",
+        "list": "all"
       }
-    
     },
     "put": {
       "users": {
         "change_password": "all",
         "update_profile": "all"
+      }
+    },
+    "delete": {
+      "build": {
+        "delete": "1"
       }
     }
   },

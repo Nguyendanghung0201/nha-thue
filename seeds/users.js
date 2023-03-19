@@ -5,12 +5,11 @@ exports.seed = function(knex) {
   return knex('users').del()
     .then(async function () {
       // Inserts seed entries
-
       return knex('users').insert([
         {
           display_name: 'Admin Duc',
           email: "danghung020195@gmail.com",
-          password: md5(md5("123456")),
+          password: md5("123456"),
           address: "Ho Chi Minh",
           gender: 1,
           status: 1,

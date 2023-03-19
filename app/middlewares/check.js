@@ -37,7 +37,7 @@ exports.checkadmin = async function (req, res, next) {
         if (userInfo && userInfo.level == 0) {
             return res.send({ status: false, msg: 'error', code: 664, data: [] });
         }
-        
+
         req.body.userInfo = userInfo;
         next();
     }
@@ -50,8 +50,10 @@ exports.verifyToken = async function (req, res, next) {
         : req.query.mod ? req.query.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '';
     req.mod = mod;
     let bearerHeader = req.session.token ? req.session.token : req.headers['authorization'];
+    console.log('abbcbc', bearerHeader)
     if (typeof bearerHeader !== 'undefined') {
-        let bearerToken = bearerHeader;
+
+        let bearerToken = bearerHeader.split(' ')[1];
         let status = false;
         // let done = false;
         let authData = null;
