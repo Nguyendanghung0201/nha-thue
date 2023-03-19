@@ -42,12 +42,14 @@ class build_repository {
     }
 
     async get_list(query) {
-        if (query.province_code) {
-            return await db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code).limit(20).offset((query.page - 1) * 20)
-        }
         if (query.city_code) {
             return await db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code).limit(20).offset((query.page - 1) * 20)
         }
+        if (query.province_code) {
+            return await db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code).limit(20).offset((query.page - 1) * 20)
+        }
+
+        return await db(this.db).select('*').where('status', 1).limit(20).offset((parseInt(query.page) - 1) * 20)
 
     }
 
