@@ -18,6 +18,9 @@ class location_repository {
         return await db('town_code').select('*').where('city_code', id)
     }
 
+    async getListAlong(id){
+        return await db('along_code').select('*').where('province_id', id)
+    }
 
 
 

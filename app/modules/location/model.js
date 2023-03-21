@@ -10,3 +10,7 @@ exports.list_city = async(query)=>{
 exports.list_town = async(query)=>{
     return await repLocation.getListTown(query.param.id)
 }
+exports.list_along = async(query)=>{
+    return await repLocation.getListAlong(query.param.id)
+}
+

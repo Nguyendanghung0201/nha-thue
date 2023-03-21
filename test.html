@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<div id="map" style="height: 400px; width: 100%;"></div>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaHZ6LVyzZAhnBKHCrb7PcTjBcUttqIeY&callback=initMap">
+    </script>
+
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 37.7749, lng: -122.4194 },
+            zoom: 8
+        });
+
+
+        var image = new google.maps.MarkerImage(
+            'https://file.realnetpro.com/photo/0031102/building/large/b0001138824167758076501.jpg',
+            new google.maps.Size(32, 32),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(16, 32),
+            new google.maps.Size(32, 32)
+        );
+
+        var marker2 = new google.maps.Marker({
+            position: { lat: 37.7749, lng: -122.4194 },
+            map: map,
+            icon: image
+        });
+        new google.maps.Marker({
+            position: { lat: 36.7749, lng: -122.4194 },
+            map: map,
+            icon: image
+        });
+    }
+    initMap()
+</script>
+
+</html>

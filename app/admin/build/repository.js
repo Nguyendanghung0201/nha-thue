@@ -49,7 +49,7 @@ class build_repository {
     }
 
     async delete(uid) {
-        return await db(this.db).update('status', 0).where(this.column.id, uid)
+        return await db(this.db).update('status', 0).whereIn(this.column.id, uid)
     }
 
 }

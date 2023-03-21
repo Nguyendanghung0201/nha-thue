@@ -8,9 +8,9 @@
       "build": {
         "list": "all"
       },
-      "location":{
-        "list_province":"all",
-        "list_city":"all"
+      "location": {
+        "list_province": "all",
+        "list_city": "all"
       }
     },
     "post": {
@@ -19,8 +19,10 @@
         "register": "all"
       },
       "build": {
-        "addbuild": "1,2",
-        "list": "all"
+        "add": "1,2",
+        "list": "all",
+        "delete": "1,2"
+        
       }
     },
     "put": {

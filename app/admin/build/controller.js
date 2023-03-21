@@ -1,35 +1,19 @@
 const model = require('./model');
-exports.addbuild = async function (query) {
+
+exports.add = async function(query){
     let validate = await val.Form(query, {
-        name: "required",
-        address: "required",
-        line: "required",
-        infor: "required",
-        images: "required",
-        phone:"required"
+        list:'required'
+     });
 
-    });
-    if (!validate.status) {
+     if (!validate.status) {
         return {status: false, msg: validate.error, code: 707, data: []};
     }
-    return await model.addbuild(query);
-};
-
-exports.list = async function (query) {
-    let validate = await val.Form(query.param, {
-       page:'required',
-       pagination:'required'
-
-    });
-    if (!validate.status) {
-        return {status: false, msg: validate.error, code: 707, data: []};
-    }
-    return await model.list(query);
-};
+    return await model.add(query);
+}
 
 exports.delete = async function (query){
-    let validate = await val.Form(query.param, {
-        id:'required'
+    let validate = await val.Form(query, {
+        list:'required'
      });
 
      if (!validate.status) {
@@ -37,3 +21,4 @@ exports.delete = async function (query){
     }
     return await model.delete(query);
 }
+

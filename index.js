@@ -27,8 +27,6 @@ app.use(session({
 
 var server = http.createServer(app);
 
-
-
 //config update file
 /** @namespace global.config */
 app.use(cors(global.config.cors));
@@ -61,6 +59,7 @@ app.all('/client/:act', [middleware.verifyToken, middleware.check], async functi
         let nameRole = request.body.userInfo ? request.body.userInfo.level : '';
         let authMethod = global.authMethod.check_function(request.method, act, mod, nameRole);
         /** @namespace request.files */
+
         request.body.files = request.files ? request.files : '';
         if (authMethod) {
 
@@ -127,142 +126,181 @@ app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin], async func
     response.send(dataReponse)
 });
 app.get('/craw', async (req, res) => {
-    // for (let i = 6; i <= 47; i++) {
-    //     let code;
-    //     if (i < 10) {
-    //         code = '0' + i
-    //     } else {
-    //         code = i.toString()
-    //     }
+    for (let i = 1; i <= 47; i++) {
+        let code;
+        if (i < 10) {
+            code = '0' + i
+        } else {
+            code = i.toString()
+        }
 
-    //     let f = await axios.post('https://www.realnetpro.com/ajax/get_city_along_code.php', {
-    //         'pref_code[]': code,
-    //         'type': 'city'
-    //     }, {
-    //         headers: { "Content-Type": "multipart/form-data" }
-    //     });
-    //     let a = f.data[code].city;
-    //     let arr = []
-    //     for (let element of a) {
-    //         let datainser = {
-    //             code: element.Code,
-    //             name: element.Name,
-    //             province_code: i
-    //         }
-    //         arr.push(datainser)
-    //     }
-    //     await global.db('city_code').insert(arr)
-    //     await delay(2000)
-    // }
+        let f = await axios.post('https://www.realnetpro.com/ajax/get_city_along_code.php', {
+            'pref_code[]': code,
+            'type': 'along'
+        }, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+        let a = f.data[code].along;
+        let arr = []
+        for (let element of a) {
+
+            // let datainser = {
+            //     code: element.Code,
+            //     name: element.Name,
+            //     province_code: i
+            // }
+            let datainser = {
+                AlongCode: element.AlongCode,
+                AlongName: element.AlongName,
+                AlongNo: element.AlongNo,
+                AlongShortName: element.AlongShortName,
+                province_id: i
+            }
+            arr.push(datainser)
+        }
+        //   await global.db('along_code').insert(arr)
+        await delay(2000)
+    }
     res.json({
         f: 'a'
     })
 })
+app.get('/test', async (req, res) => {
+    let list = await global.db('building').select("id", 'address').where('province_id', 7).limit(20)
+
+    let list_city = await global.db('city_code').select("*").where('province_code', 7)
+    let listmoi = []
+    for (let el of list) {
+        let list_trung = []
+        for (let element of list_city) {
+            if (el.address.includes(element.name)) {
+                list_trung.push(element)
+            }
+        }
+        listmoi.push({
+            id: el.id,
+            address: el.address,
+            city: list_trung
+        })
+    }
+    res.json({
+        kq: listmoi
+    })
+})
+
 async function abcd(id) {
     let arr = []
     let check
     let province_id = id
     //
     try {
-        for (let i = 0; i <= 10; i++) {
-            let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
-                headers: {
-                    "cookie": "certification_key=31077b5b6b8c5a83423b9883acf65911; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; page_method=estate; mybox_mode=insert; setting_number=1; open_room=five; method=estate; cookie_map_e=34.77719632842561%2C135.4966264932098; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; PHPSESSID=otfcqclpvlmsh68gcdmlseaauv; lat1=34.8281515690516; lng1=135.39706289457698; lat2=34.72620959940057; lng2=135.5961900918426; page_type=building; certification_key=a1cef70426705811b24ecdf57f5a8c8b; ini_pref=02; ini_pref_name=%E9%9D%92%E6%A3%AE; pref_code=02; square_meter_l=-1; square_meter_h=-1; gr=03AFY_a8V94ic525iZu6vCPpL4lU9kw2F-S5op6hz5OHJ95VtSaym7m21kI-hQT1FDEMknB_xrtJpgg40DZVetsNOdFpc7HaHsdgxtYZxyuHsYh-oZ4vplU-GGEZAUxUUdEsdtWBNdKKkqA7GUZnBUestr2lvcIj26R34BLwI_2zQ69erTS6XBMKyKS5NFDW4BRe9JDdZNAXpIygJnxFFOmrYpgmHCjnurWXOODyiHBoUOjVcOjTAZwss5f6S_eO2U1XJgc3GC-gc0o8DH0o-qdvXNKdDWcMZMVjRl8RqI99QeI5zdh8Rkinz6gg8l-kXaLgaSnBX28Wi1Hf7SsVwz_AvKEHCMYzXIeDaQPzVSH47c5-EPOrAus9s9OMd0GoWe63JkX4bk-LXhurpZODvBduppnf3btyFKvDRabfRAnkWAndvvri_ilyw081JnMCdqj3lYkTkUaPbwk14Ai8qKWMoB86O8NEKlPLiGYMJDxUipNU_OMDy64pJFaK-yFisY0mkh-6q9tAz584j8FP3-0HTN2RvVRuQk1cBTo3MpNSxvZN3-zfk5X8-NNhzCbLE7AxKCL5y7LH7E; _ga_9FXQTNH0JJ=GS1.1.1679033636.12.1.1679036074.0.0.0",
-                    'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
-                    "origin": 'https://www.realnetpro.com'
-                }
-            });
+        for (let j = 1; j <= 27; j++) {
+            let code = ''
+            if (j < 10) {
+                code = '0' + j
+            } else {
+                code = j.toString()
+            }
+            for (let i = 0; i <= 4; i++) {
+                let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
+                    headers: {
+                        "cookie": `certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; ini_pref=${code}; ini_pref_name=%E7%A6%8F%E5%B3%B6; square_meter_l=-1; square_meter_h=-1; pref_code=${code}; gr=03AKH6MRHjjra8ridswtLESZleP889IQSbGaKZH2RYI5rLRNYSPTXTmzNqq81wuBRm2j67Np6-OTVguF2EWeMFlmwpS8LY3-0Lt5kms4eh1ThXnu5YBUzF5QXjtGc1FcFTg4fXBgDY8j2DKEKrk8QPpTDHEnr7WqSYANsZ8sC-XvLlBFZ1SPikOyntebRC_8rBEZs9k9PRP0Op42BKKprKkHfYjhPwp6-sPcY9-gouYAz2IKLjZtLhIchGcTWGP2Y2HthzPuMYAW1_vFlpF51cY-IdDdLFr0X88m_YFuOnHVWolUZ9VpmdCVWtMgosBbm2_L6SfqMpfTwnfoYylMghj6N-PKNrXEi6s6_d-0Ji81gKz7Q-U8Fb71E5IhU3SgiocGBnrujzIpE3IQE3N_4fMNRD075fafvQk1hZqb0M9dPpR8vEG2-BVU3Y01sIWnzGpH8ZEra7UfnabeCKvU4MVCESK6lfkquiyidSTwyqh7F5ByJ-mP1D1IRbiIa1wZl4exV-HnZhJgMqPL6_QmHlmqWgO1jzeCcdpJWM7NYsruf-uNLRLTA5OJh-AszAgNM6skNgwMxjwuZA; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361628.0.0.0`,
+                        'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
+                        "origin": 'https://www.realnetpro.com'
+                    }
+                });
 
-            if (f.data) {
+                if (f.data) {
 
-                check = f.data
-                let $ = cheerio.load(f.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
-                let list = $('.main_contents .one_building')
-                if (list) {
-                    check = $('div').hasClass('.main_contents')
-                    for (let element of list) {
-                        let name = $(element).find('.building_info .building_name').text()
-                        let images = $(element).find('img.building_photo').attr('src')
-                        let data = $(element).find('.building_info > div:nth-child(2)').text().trim()
-                        let phone = $(element).find('.building_company').text()
-                        let address = ''
-                        let line = ''
-                        let pdf = $(element).find('.building_data a').attr('href')
-                        if (data && data.length > 5) {
-                            let index = data.search('沿')
-                            if (index != -1) {
-                                address = data.slice(3, index)
-                                line = data.slice(index + 3, data.length)
-                            }
-
-
-                        }
-                        let rooms = $(element).find('.room_info_tr')
-                        let arr_rooms = []
-                        if (rooms) {
-                            for (let el of rooms) {
-                                let id = $(el).find('.browsing_date').attr('id')
-                                let yeucau = $(el).find('td .specify_n').text()
-                                let layout = $(el).find('td .room_layout_image').attr('src')
-                                let st_td = $(el).find('td.st_td').text()
-                                let date = $(el).find('td:nth-child(6)').text()
-                                let dientich = $(el).find('td:nth-child(7)').text()
-                                let tien = $(el).find('td:nth-child(8)').text()
-                                let key_money = $(el).find('td:nth-child(9)').text()
-                                let datcoc = $(el).find('td:nth-child(10)').text()
-                                let qc = $(el).find('td:nth-child(11)').text()
-                                let infor_rooms = {
-                                    id: id ? id.trim() : "",
-                                    yeucau: yeucau ? yeucau.trim() : "",
-                                    layout: layout ? layout.trim() : "",
-                                    st_td: st_td ? st_td.trim() : "",
-                                    date: date ? date.trim() : "",
-                                    dientich: dientich ? dientich.trim() : "",
-                                    tien: tien ? tien.trim() : "",
-                                    key_money: key_money ? key_money.trim() : "",
-                                    datcoc: datcoc ? datcoc.trim() : "",
-                                    qc: qc ? qc.trim() : ""
+                    check = f.data
+                    let $ = cheerio.load(f.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
+                    let list = $('.main_contents .one_building')
+                    if (list) {
+                        check = $('div').hasClass('.main_contents')
+                        for (let element of list) {
+                            let name = $(element).find('.building_info .building_name').text()
+                            let images = $(element).find('img.building_photo').attr('src')
+                            let data = $(element).find('.building_info > div:nth-child(2)').text().trim()
+                            let phone = $(element).find('.building_company').text()
+                            let address = ''
+                            let line = ''
+                            let pdf = $(element).find('.building_data a').attr('href')
+                            if (data && data.length > 5) {
+                                let index = data.search('沿')
+                                if (index != -1) {
+                                    address = data.slice(3, index)
+                                    line = data.slice(index + 3, data.length)
                                 }
-                                arr_rooms.push(infor_rooms)
+
+
                             }
+                            let rooms = $(element).find('.room_info_tr')
+                            let arr_rooms = []
+                            if (rooms) {
+                                for (let el of rooms) {
+                                    let id = $(el).find('.browsing_date').attr('id')
+                                    let yeucau = $(el).find('td .specify_n').text()
+                                    let layout = $(el).find('td .room_layout_image').attr('src')
+                                    let st_td = $(el).find('td.st_td').text()
+                                    let date = $(el).find('td:nth-child(6)').text()
+                                    let dientich = $(el).find('td:nth-child(7)').text()
+                                    let tien = $(el).find('td:nth-child(8)').text()
+                                    let key_money = $(el).find('td:nth-child(9)').text()
+                                    let datcoc = $(el).find('td:nth-child(10)').text()
+                                    let qc = $(el).find('td:nth-child(11)').text()
+                                    let infor_rooms = {
+                                        id: id ? id.trim() : "",
+                                        yeucau: yeucau ? yeucau.trim() : "",
+                                        layout: layout ? layout.trim() : "",
+                                        st_td: st_td ? st_td.trim() : "",
+                                        date: date ? date.trim() : "",
+                                        dientich: dientich ? dientich.trim() : "",
+                                        tien: tien ? tien.trim() : "",
+                                        key_money: key_money ? key_money.trim() : "",
+                                        datcoc: datcoc ? datcoc.trim() : "",
+                                        qc: qc ? qc.trim() : ""
+                                    }
+                                    arr_rooms.push(infor_rooms)
+                                }
+                            }
+                            let real_id = "";
+                            if (pdf) {
+                                real_id = pdf.slice(pdf.search('id=') + 3, pdf.length)
+                            }
+                            let el = {
+                                name: name ? name.trim() : '',
+                                real_id: real_id,
+                                address: address ? address.trim() : '',
+                                line: line ? line.trim() : '',
+                                infor: '',
+                                phone: phone ? phone.trim() : '',
+                                images: images ?? '',
+                                province_id: code,
+                                city_id: 'new',
+                                town_id: 'new',
+                                data: data,
+                                pdf: pdf ?? '',
+                                room: JSON.stringify(arr_rooms)
+                            }
+                            arr.push(el)
                         }
-                        let real_id = "";
-                        if (pdf) {
-                            real_id = pdf.slice(pdf.search('id=') + 3, pdf.length)
-                        }
-                        let el = {
-                            name: name ? name.trim() : '',
-                            real_id: real_id,
-                            address: address ? address.trim() : '',
-                            line: line ? line.trim() : '',
-                            infor: '',
-                            phone: phone ? phone.trim() : '',
-                            images: images ?? '',
-                            province_id: province_id,
-                            city_id: 'new',
-                            town_id: 'new',
-                            data: data,
-                            pdf: pdf ?? '',
-                            room: JSON.stringify(arr_rooms)
-                        }
-                        arr.push(el)
+                    } else {
+                        check = $('div').hasClass('.main_contents')
+
+                        break;
+
                     }
                 } else {
-                    check = $('div').hasClass('.main_contents')
-
+                    check = false
                     break;
 
                 }
-            } else {
-                check = false
-                break;
-
+                await global.db('building').insert(arr)
+                console.log(i, arr.length)
+                arr = []
+                await delay(5000)
             }
-            await global.db('building').insert(arr)
-            console.log(i, arr.length)
-            arr = []
-            await delay(10000)
         }
     } catch (e) {
         console.log('loi ', e)
@@ -271,12 +309,14 @@ async function abcd(id) {
     // await global.db('building').insert(arr)
 
 }
+
+
 async function town() {
     // https://www.realnetpro.com/ajax/town.php?city_code=02202
     for (let i = 7; i <= 20; i++) {
         let min = i * 250;
         let max = (i + 1) * 250;
-        let cityList = await global.db('city_code').select('*').where('id', '>=', min).andWhere('id', '<', max).andWhere('id','>',1806)
+        let cityList = await global.db('city_code').select('*').where('id', '>=', min).andWhere('id', '<', max).andWhere('id', '>', 1806)
         if (cityList.length > 0) {
             for (let el of cityList) {
                 let f = await axios.get(`https://www.realnetpro.com/ajax/town.php?city_code=${el.code}`)
@@ -303,12 +343,53 @@ async function town() {
     console.log('end')
 }
 
+//certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; ini_pref=07; ini_pref_name=%E7%A6%8F%E5%B3%B6; square_meter_l=-1; square_meter_h=-1; pref_code=07; gr=03AKH6MRHjjra8ridswtLESZleP889IQSbGaKZH2RYI5rLRNYSPTXTmzNqq81wuBRm2j67Np6-OTVguF2EWeMFlmwpS8LY3-0Lt5kms4eh1ThXnu5YBUzF5QXjtGc1FcFTg4fXBgDY8j2DKEKrk8QPpTDHEnr7WqSYANsZ8sC-XvLlBFZ1SPikOyntebRC_8rBEZs9k9PRP0Op42BKKprKkHfYjhPwp6-sPcY9-gouYAz2IKLjZtLhIchGcTWGP2Y2HthzPuMYAW1_vFlpF51cY-IdDdLFr0X88m_YFuOnHVWolUZ9VpmdCVWtMgosBbm2_L6SfqMpfTwnfoYylMghj6N-PKNrXEi6s6_d-0Ji81gKz7Q-U8Fb71E5IhU3SgiocGBnrujzIpE3IQE3N_4fMNRD075fafvQk1hZqb0M9dPpR8vEG2-BVU3Y01sIWnzGpH8ZEra7UfnabeCKvU4MVCESK6lfkquiyidSTwyqh7F5ByJ-mP1D1IRbiIa1wZl4exV-HnZhJgMqPL6_QmHlmqWgO1jzeCcdpJWM7NYsruf-uNLRLTA5OJh-AszAgNM6skNgwMxjwuZA; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361628.0.0.0
+//certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; ini_pref_name=%E5%AE%AE%E5%9F%8E; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; square_meter_l=-1; square_meter_h=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; gr=03AFY_a8VqynB7WHCdxKmiJnzuKJCTu0f56UfY8AhH2p6EK5DSsCNblsZojE8hZgOikmTlaJ_O6GU9ExYU0Qdr2TR1Vw6irUAbMesQBPvD45tXkoDUKEQNOafKHEe0u2nPYC9PXd-Jl7kuLhVHvb4NK8Ue4NML2mIry0bV-KRRJVZYKnwZFJLa5JQjOIDFFCnduL_O1x93N5J02Buk5YX6QtS6KIgDhIBUe6u3KwIunTDCAeiwcAI6d8AtRyQSDj1-BoMmg0lzAMxFhcIV35EIjn6rxs4EC9L2fW9uxuTt4HG0HaJ2RkFC77FJdTah0SwkwCuTvcArvSHHn8e5VOA18UsF6rKaNeolUK0h_OLGVUa2AbQDRPITNlsV2gDATcDdX50Y6HINXF9hEq8H5OJ_i09cBESibdwxD_qahM7Ti6vlhSyBz-PWvv0m1hk1lcHE2THLKgRanAruf5WFnJR3AT9ih5D-uAA9EUFYWl5FvtnHjd7RWk2xTBB60u7pxrotbCHafALDF5_sZOBjCMSASEM4l0UdIx5Z7DfvNARM3VsWlv5Ni3UfzEGoWAbkSNz5Uy5jkrUAY-6u; pref_code=05; ini_pref=06; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361481.0.0.0
+async function list(id) {
+    let alist = await global.db('building').select('*').where('province_id', id).limit(100)
 
-
-async function list(id){
-    let alist = await global.db('building').select('*').where('province_id',id).limit(100)
-    
 }
+
+async function phanload() {
+    for (let i = 1; i <= 27; i++) {
+        let list = await global.db('building').select("id", 'address').where('province_id', i)
+        let list_city = await global.db('city_code').select("*").where('province_code', i)
+        let listmoi = []
+        for (let el of list) {
+            let list_trung = []
+            for (let element of list_city) {
+                if (el.address.includes(element.name)) {
+                    list_trung.push(element)
+                }
+            }
+            console.log('next ',i, list_trung.length)
+            if (list_trung.length === 0) {
+                await global.db('building').update('city_category', 'no_city').where('id',el.id)
+                continue
+            }
+            if (list_trung.length === 1) {
+                await global.db('building').update({
+                    'city_category': 'city',
+                    'city_id': list_trung[0].id
+                }).where('id',el.id)
+                continue
+            }
+            if (list_trung.length > 1) {
+                let string = list_trung.map(e => e.id).toString()
+
+                await global.db('building').update('city_category', 'multi_city,' + string).where('id',el.id)
+            }
+          
+            // listmoi.push({
+            //     id: el.id,
+            //     address: el.address,
+            //     city: list_trung
+            // })
+        }
+    }
+
+}
+
 // table.string('code', 255).notNullable();
 // table.string('name', 255).notNullable();
 // table.integer('city_code', 11).notNullable();
