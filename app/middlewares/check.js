@@ -50,7 +50,6 @@ exports.verifyToken = async function (req, res, next) {
         : req.query.mod ? req.query.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '';
     req.mod = mod;
     let bearerHeader = req.session.token ? req.session.token : req.headers['authorization'];
-    console.log('abbcbc', bearerHeader)
     if (typeof bearerHeader !== 'undefined') {
 
         let bearerToken = bearerHeader.split(' ')[1];

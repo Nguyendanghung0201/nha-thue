@@ -43,13 +43,13 @@ class build_repository {
 
     async get_list(query) {
         if (query.city_code) {
-            return await db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code).limit(20).offset((query.page - 1) * 20)
+            return await db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
         }
         if (query.province_code) {
-            return await db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code).limit(20).offset((query.page - 1) * 20)
+            return await db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
         }
 
-        return await db(this.db).select('*').where('status', 1).limit(20).offset((parseInt(query.page) - 1) * 20)
+        return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
 
     }
 

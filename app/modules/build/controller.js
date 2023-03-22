@@ -1,7 +1,6 @@
 const model = require('./model');
 
 exports.list = async function (query) {
-    console.log('hahahha',query)
     let validate = await val.Form(query, {
         page: 'required',
     });
