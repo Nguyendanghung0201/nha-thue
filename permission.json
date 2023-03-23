@@ -10,7 +10,8 @@
       },
       "location": {
         "list_province": "all",
-        "list_city": "all"
+        "list_city": "all",
+        "list_along":"all"
       }
     },
     "post": {
