@@ -37,7 +37,7 @@ exports.login = async function (query) {
         Id: checkUser.Id,
         display_name: checkUser.display_name,
     };
-    let token = await jwt.sign({dataMain: dataCheckUsername}, config.keyJWT,  { expiresIn: '1h' });
+    let token = await jwt.sign({dataMain: dataCheckUsername}, config.keyJWT,  { expiresIn: '24h' });
 
   
     // return result
