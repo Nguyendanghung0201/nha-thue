@@ -2,7 +2,7 @@ const db = require("../../cors/db");
 
 class build_repository {
     constructor() {
-        this.db = "building";
+        this.db = "building2";
         this.column = {
             id: "id",
             name: "name",
