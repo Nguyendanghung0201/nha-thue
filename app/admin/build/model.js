@@ -20,3 +20,13 @@ exports.add = async function (query) {
         data: []
     };
 }
+
+exports.update = async function (query) {
+    await buildRes.update(query.id, query.data,)
+    return {
+        status: true,
+        msg: "success",
+        code: 0,
+        data: []
+    };
+}

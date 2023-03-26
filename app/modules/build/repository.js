@@ -42,15 +42,24 @@ class build_repository {
     }
 
     async get_list(query) {
+        let sql
         if (query.city_code) {
-            return await db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
+            sql = db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code)
         }
         if (query.province_code) {
-            return await db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
+            sql = db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code)
+        } else {
+            sql = db(this.db).select('*').where('status', 1)
+
         }
+        if(query.along_code){
+            sql = sql.andWhere('along_id',query.along_code).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
+        }else{
+            sql = sql.paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
 
-        return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20,isLengthAware :true, currentPage: query.page })
 
+        }
+        return await sql
     }
 
     async delete(uid) {

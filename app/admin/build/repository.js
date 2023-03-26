@@ -47,6 +47,10 @@ class build_repository {
         return await db(this.db).select('*').limit(pagination)
             .offset((page - 1) * pagination).where('status', 1)
     }
+    async update(id, data) {
+        return await db(this.db).update(data).where('id', id)
+    }
+
 
     async delete(uid) {
         return await db(this.db).update('status', 0).whereIn(this.column.id, uid)
