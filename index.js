@@ -449,7 +449,7 @@ async function abcd(id) {
     // await global.db('building').insert(arr)
 
 }
-app.get('/', async (req, res) => {
+app.get('*', async (req, res) => {
     res.render('index')
 })
 
@@ -696,6 +696,7 @@ async function getdetail() {
     }
     console.log('end')
 }
+
 
 // table.string('code', 255).notNullable();
 // table.string('name', 255).notNullable();
