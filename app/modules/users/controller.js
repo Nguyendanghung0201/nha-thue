@@ -59,3 +59,8 @@ exports.update_profile = async function(query) {
     }
     return await model.update_profile(query);
 }
+
+
+exports.list_ref = async function(query){
+    return await model.list(query)
+}

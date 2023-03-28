@@ -6,16 +6,16 @@ class user_repository {
         this.column = {
             Id: "Id",
             display_name: "display_name",
-            email: "email", 
-            country: "country", 
+            email: "email",
+            country: "country",
             address: "address",
-            gender: "gender", 
-            status: "status", 
-            level: "level", 
-            created_at: "created_at", 
+            gender: "gender",
+            status: "status",
+            level: "level",
+            created_at: "created_at",
             updated_at: "updated_at",
             phone: "phone",
-            avatar:"avatar",
+            avatar: "avatar",
             find_raw: "find_raw"
         };
     }
@@ -38,6 +38,9 @@ class user_repository {
             }
         }
         return select;
+    }
+    async getlist(ref) {
+        return await db(this.db).select('id', 'display_name', 'gender', 'gender').where('your_ref', ref)
     }
 
     async check_phone(phone) {

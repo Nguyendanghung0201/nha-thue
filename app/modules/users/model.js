@@ -14,6 +14,15 @@ exports.logout = async function (query) {
         data: []
     };
 };
+exports.list = async function (query) {
+    let list = await URep.getlist(query.userInfo.ref)
+    return {
+        status: true,
+        msg: "success",
+        code: 0,
+        data: list
+    }
+};
 
 exports.login = async function (query) {
     //check login

@@ -3,7 +3,8 @@
     "get": {
       "users": {
         "logout": "all",
-        "my_profile": "all"
+        "my_profile": "all",
+        "list_ref":"all"
       },
       "build": {
         "list": "all"
