@@ -42,7 +42,7 @@ class build_repository {
     }
 
     async get_list(query) {
-        let sql
+        let sql 
         if (query.city_code) {
             sql = db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code)
         }
@@ -57,9 +57,12 @@ class build_repository {
         }else{
             sql = sql.paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
 
-
         }
         return await sql
+    }
+
+    async getMybuild(user_id){
+        return await db('my_build').select('buiding_id').where('my_build.user_id', user_id)
     }
 
     async delete(uid) {
