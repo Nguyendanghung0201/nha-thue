@@ -1,0 +1,28 @@
+const db = require("../../cors/db");
+
+class my_build_repository {
+    constructor() {
+
+    }
+
+
+    async add(data) {
+        return await db('my_build').insert(
+            data
+        )
+    }
+    async check(user_id, id) {
+        return await db('my_build').select('*').where('user_id', user_id).andWhere('buiding_id', id).first()
+    }
+
+    async getList(user_id) {
+        return await db('my_build').leftJoin('building2', 'my_build.buiding_id', 'building2.id').select('building2.*','my_build.id').where('my_build.user_id', user_id)
+    }
+    async delete(user_id, id) {
+        return await db('my_build').where('user_id', user_id).andWhere('id', id).delete()
+    }
+
+
+}
+
+module.exports = new my_build_repository();

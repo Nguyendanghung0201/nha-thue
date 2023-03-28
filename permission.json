@@ -11,7 +11,10 @@
       "location": {
         "list_province": "all",
         "list_city": "all",
-        "list_along":"all"
+        "list_along": "all"
+      },
+      "my_build": {
+        "list": "all"
       }
     },
     "post": {
@@ -23,7 +26,10 @@
         "add": "1,2",
         "list": "all",
         "delete": "1,2"
-        
+      },
+      "my_build": {
+        "add": "all",
+        "delete": "all"
       }
     },
     "put": {
