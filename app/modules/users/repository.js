@@ -7,6 +7,7 @@ class user_repository {
             Id: "Id",
             display_name: "display_name",
             email: "email",
+            ref:'ref',
             country: "country",
             address: "address",
             gender: "gender",
