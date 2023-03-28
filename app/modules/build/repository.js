@@ -68,6 +68,10 @@ class build_repository {
     async delete(uid) {
         return await db(this.db).update('status', 0).where(this.column.id, uid)
     }
+    
+    async detail(uid) {
+        return await db(this.db).select('*').where(this.column.id, uid).first()
+    }
 
 }
 
