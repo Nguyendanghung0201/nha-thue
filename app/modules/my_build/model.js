@@ -31,7 +31,7 @@ exports.delete = async function (query) {
 }
 
 exports.list = async function (query) {
-    let result = await repLocation.getList(query.userInfo.Id)
+    let result = await repLocation.getList(query.userInfo.Id,query.param.page)
     return {
         status: true,
         msg: "success",

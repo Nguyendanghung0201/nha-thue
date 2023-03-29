@@ -26,6 +26,14 @@ exports.list = async function (query) {
 }
 exports.detail = async function (query) {
     let result = await buildRes.detail(query.param.id);
+    let check = await buildRes.check(query.userInfo.Id, query.param.id);
+    if(result){
+        if(check){
+            result.mybuild =true
+        }else{
+            result.mybuild =false
+        }
+    }
     return {
         status: true,
         msg: "success",
