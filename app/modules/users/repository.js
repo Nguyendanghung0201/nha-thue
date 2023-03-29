@@ -34,6 +34,7 @@ class user_repository {
     _create_select_care(care = []) {
         let select = [];
         for (let item in this.column) {
+            
             if (care.indexOf(this.column[item]) !== -1) {
                 select.push(this.column[item]);
             }
@@ -41,7 +42,7 @@ class user_repository {
         return select;
     }
     async getlist(ref) {
-        return await db(this.db).select('id', 'display_name', 'gender', 'gender').where('your_ref', ref)
+        return await db(this.db).select('id', 'display_name', 'gender', 'created_at').where('your_ref', ref)
     }
 
     async check_phone(phone) {
