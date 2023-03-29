@@ -42,7 +42,7 @@ class user_repository {
         return select;
     }
     async getlist(ref) {
-        return await db(this.db).select('id', 'display_name', 'gender', 'created_at').where('your_ref', ref)
+        return await db(this.db).select('id', 'display_name','phone', 'gender', 'created_at').where('your_ref', ref)
     }
 
     async check_phone(phone) {
