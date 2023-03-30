@@ -51,7 +51,9 @@ exports.verifyToken = async function (req, res, next) {
     req.mod = mod;
     let bearerHeader = req.session.token ? req.session.token : req.headers['authorization'];
     if (typeof bearerHeader !== 'undefined') {
-
+        if (authMethod.check_ignore(mod) === true) {
+            return next();
+        } 
         let bearerToken = bearerHeader.split(' ')[1];
         let status = false;
         // let done = false;
