@@ -1,801 +1,740 @@
-/********************************************************/
-/* åœ°å›³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å®Ÿè£…
-/*
-/********************************************************/
+
+'use strict';
+const express = require('express');
+const bodyParser = require('body-parser');
+const timeout = require('connect-timeout');
+const cors = require('cors');
+var http = require('http');
+var axios = require('axios');
+const app = express();
+const device = require('express-device');
+const requestIp = require('request-ip');
+const session = require('express-session');
+require('./app/cors/global');
+var cheerio = require("cheerio");
+app.use(timeout(5 * 60 * 1000));
+app.use(bodyParser.json({ type: 'application/json' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", "./app/views");
+app.use(express.static('public'));
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    secret: global.config.keyJWT,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }
+}));
+
+var server = http.createServer(app);
+
+//config update file
+/** @namespace global.config */
+app.use(cors(global.config.cors));
+//get device name
+app.use(device.capture());
+//get IP device
+app.use(requestIp.mw());
+app.use(express.static(__dirname + '/public'));
+
+app.use(function (err, req, res, next) {
+    return res.send({ status: false, msg: "error", code: 700, data: err });
+});
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.locals.token = req.session.token;
+    next();
+});
+const delay = (ms) =>
+    new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 
+app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
 
+    let dataReponse = null;
+    let dataError = null;
+    try {
+        let act = request.params.act.replace(/[^a-z0-9\_\-]/i, '').toLowerCase();
+        let mod = (request.mod) ? request.mod : request.query.mod;
+        let nameRole = request.body.userInfo ? request.body.userInfo.level : '';
+        let authMethod = global.authMethod.check_function(request.method, act, mod, nameRole);
+        /** @namespace request.files */
 
+        request.body.files = request.files ? request.files : '';
+        if (authMethod) {
 
+            let controller = require('./app/modules/' + act + '/controller');
+            if ((controller) && (controller[mod])) {
+                let query = request.body;
+                query.param = request.query;
+                query.clientIp = request.clientIp;
+                query.device = request.device;
+                try {
+                    dataReponse = await controller[mod](query);
 
-var map_control = function (param) {
-    var mc = this;
-
-    // åŸºæœ¬ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
-    this.map = {};
-    this.geocoder = {};
-    this.place = {};
-    this.map_id = param.map_id;
-    this.lat = param.lat;
-    this.lng = param.lng;
-    this.zoom = param.zoom;
-    this.geocoding_zoom = 14;
-    this.wheel = param.wheeltype;
-    this.bounds = { ne: { lat: 0, lng: 0 }, sw: { lat: 0, lng: 0 } };
-    this.map_option = {
-        zoom: this.zoom,
-        center: new google.maps.LatLng(this.lat, this.lng),
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        disableDefaultUI: false,
-        scrollwheel: this.wheel
-    };
-
-    this.street_view_id = "";
-    if (param.street_view_id) {
-        this.street_view_id = param.street_view_id;
-
+                } catch (ex) {
+                    console.log(ex);
+                    dataReponse = { status: false, msg: "error", code: 700, data: [] };
+                }
+            } else {
+                dataReponse = { status: false, msg: "error", code: 703, data: [] };
+            }
+        } else {
+            dataReponse = { status: false, msg: "error", code: 701, data: [] };
+        }
+    } catch (sys) {
+        console.log(sys)
+        dataReponse = { status: false, msg: "error", code: 700, data: sys };
     }
-    this.street_view = {};
-    this.street_view_option = {};
+    response.send(dataReponse)
+});
+app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin], async function (request, response) {
 
-    if (param.style_option) {
-        this.map_option.styles = param.style_option;
+    let dataReponse = null;
+    let dataError = null;
+    try {
+        let act = request.params.act.replace(/[^a-z0-9\_\-]/i, '').toLowerCase();
+        let mod = (request.mod) ? request.mod : request.query.mod;
+        let nameRole = request.body.userInfo ? request.body.userInfo.level : '';
+        let authMethod = global.authMethod.check_function(request.method, act, mod, nameRole);
+        /** @namespace request.files */
+        request.body.files = request.files ? request.files : '';
+        if (authMethod) {
+            let controller = require('./app/admin/' + act + '/controller');
+            if ((controller) && (controller[mod])) {
+                let query = request.body;
+                query.param = request.query;
+                query.clientIp = request.clientIp;
+                query.device = request.device;
+                try {
+                    dataReponse = await controller[mod](query);
 
+                } catch (ex) {
+                    console.log(ex);
+                    dataReponse = { status: false, msg: "error", code: 700, data: [] };
+                }
+            } else {
+                dataReponse = { status: false, msg: "error", code: 703, data: [] };
+            }
+        } else {
+            dataReponse = { status: false, msg: "error", code: 701, data: [] };
+        }
+    } catch (sys) {
+        console.log(sys)
+        dataReponse = { status: false, msg: "error", code: 700, data: sys };
     }
-
-
-    // ãƒžãƒƒãƒ—æ¤œç´¢ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
-    this.map_search_flag = 'N';
-    this.api_url = "";
-    this.search_param = {};
-    this.cnt_current_data = 0;
-    this.current_data = {};
-    this.marker = {};
-    this.solo_marker = {};
-    this.place_list = {};
-    this.place_marker = {};
-    this.direction = {};
-    this.direction_line = {};
-    this.list_function = function () { };
-    this.marker_function = function () { };
-    this.icon = "";
-    this.icon_size = 0;
-    this.marker_label = 'N';
-    this.zoom_level_limit = 'Y';
-    this.limit_zoom_level = 10;
-    this.seach_status = 'OUT';
-    this.seach_mode = 'estate';
-    if (param.seach_mode && param.seach_mode == 'parking') {
-        this.seach_mode = 'parking';
-
-    }
-    if (param.map_search_flag && param.map_search_flag == 'Y') {
-        this.map_search_flag = "Y";
-
-        if (param.api_url && param.api_url != "") {
-            this.api_url = param.api_url;
-
+    response.send(dataReponse)
+});
+app.get('/craw', async (req, res) => {
+    for (let i = 1; i <= 47; i++) {
+        let code;
+        if (i < 10) {
+            code = '0' + i
+        } else {
+            code = i.toString()
         }
 
-    }
-    if (param.icon && param.icon != "") {
-        this.icon = param.icon;
+        let f = await axios.post('https://www.realnetpro.com/ajax/get_city_along_code.php', {
+            'pref_code[]': code,
+            'type': 'along'
+        }, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+        let a = f.data[code].along;
+        let arr = []
+        for (let element of a) {
 
-        if (param.icon_size && param.icon_size > 0) {
-            this.icon_size = param.icon_size;
-
+            // let datainser = {
+            //     code: element.Code,
+            //     name: element.Name,
+            //     province_code: i
+            // }
+            let datainser = {
+                AlongCode: element.AlongCode,
+                AlongName: element.AlongName,
+                AlongNo: element.AlongNo,
+                AlongShortName: element.AlongShortName,
+                province_id: i
+            }
+            arr.push(datainser)
         }
-
+        //   await global.db('along_code').insert(arr)
+        await delay(2000)
     }
-    if (param.marker_label && param.marker_label == 'Y') {
-        this.marker_label = "Y";
+    res.json({
+        f: 'a'
+    })
+})
+app.get('/test', async (req, res) => {
+    // let list = await global.db('building').select("id", 'address').where('province_id', 7).limit(20)
 
-    }
+    // let list_city = await global.db('city_code').select("*").where('province_code', 7)
+    // let listmoi = []
+    // for (let el of list) {
+    //     let list_trung = []
+    //     for (let element of list_city) {
+    //         if (el.address.includes(element.name)) {
+    //             list_trung.push(element)
+    //         }
+    //     }
+    //     listmoi.push({
+    //         id: el.id,
+    //         address: el.address,
+    //         city: list_trung
+    //     })
+    // }
+    // res.json({
+    //     kq: listmoi
+    // })
 
+    let a = await global.db('building').select("*").where('id', 7)
+    res.send(a[0].room)
 
-    // ãƒ—ãƒ¬ã‚¤ã‚¹ä½¿ç”¨æ™‚ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
-    // ãƒ—ãƒ¬ã‚¤ã‚¹ä½¿ç”¨æ™‚ã¯ google maps api å‘¼ã³å‡ºã—ã® URL ã« &libraries=places ã®è¿½è¨˜ãŒå¿…è¦
-    this.map_place_flag = 'N';
-    if (param.map_place_flag && param.map_place_flag == 'Y') {
-        this.map_place_flag = "Y";
-
-    }
-
-
-    // åœ°å›³ã®ç”Ÿæˆ
-    this.map = new google.maps.Map(document.getElementById(this.map_id), this.map_option);
-    this.geocoder = new google.maps.Geocoder();
-
-    // 20180717 ãƒ­ã‚®ãƒ³ã‚°
-    $.post("/ajax/gmap_logger.php", { "type": "www" });
-
-    if (this.map_place_flag == 'Y') {
-        this.place = new google.maps.places.PlacesService(this.map);
-
-    }
-    this.direction = new google.maps.DirectionsService();
-
-    // åœ°å›³ã«ã‚¤ãƒ™ãƒ³ãƒˆã‚’ãƒã‚¤ãƒ³ãƒ‰
-    /*
-    google.maps.event.addListener( this.map, 'idle', function(){
-        mc.map_area();
-        mc.get_zoom();
-        if( mc.map_search_flag == 'Y' ){
-            mc.map_search();
-        }
-	
-    });
-    */
-
-    /****************
-	
-    ã€€åœ°å›³æ“ä½œã§ã®æ¤œç´¢
-	
-    ****************/
-
-    //åˆå›žè¡¨ç¤º(å…¨ã‚¿ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿å®Œäº†å¾Œç™ºç«);
-    google.maps.event.addListenerOnce(this.map, "tilesloaded", function () {
-        //console.log('ã‚¿ã‚¤ãƒ«');
-        mc.map_area();
-        mc.get_zoom();
-        mc.map_search();
-    });
-
-    //åœ°å›³ã®ãƒ‰ãƒ©ãƒƒã‚°æ“ä½œå®Œäº†å¾Œã«ç™ºç«;
-    google.maps.event.addListener(this.map, "dragend", function () {
-        //console.log('ãƒ‰ãƒ©ãƒƒã‚°');
-        mc.map_area();
-        mc.get_zoom();
-        mc.map_search();
-    });
-
-    //çŸ¢å°ã‚­ãƒ¼ã‚’æ”¾ã—ãŸã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ç™ºç«;
-    document.getElementById(param.map_id).addEventListener('keyup', function (event) {
-        var key_code_array = [40, 39, 38, 37];
-        //console.log(event.keyCode);
-        //console.log(key_code_array.indexOf(event.keyCode));
-        if (key_code_array.indexOf(event.keyCode) != -1) {
-            //console.log('çŸ¢å°æ¤œç´¢ç™ºç«');
-            //mc.map_search_flag == 'Y';
-            mc.map_area();
-            mc.get_zoom();
-            mc.map_search();
+})
+app.get('/company', async (req, res) => {
+    let a = await axios.get('https://www.realnetpro.com/ajax/company.php?pref_code=01&method=estate', {
+        headers: {
+            "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhTWFpbiI6eyJJZCI6MSwiZGlzcGxheV9uYW1lIjoiYWRtaW4xIn0sImlhdCI6MTY3OTU0NDQwNSwiZXhwIjoxNjc5NTQ4MDA1fQ.fr27oa0Br2rXTq35Ne44eWz49tGR5-R8K2FT7Rmmne8"
         }
     })
+    if (!a.data) {
+        res.json({
+            ab: 'no'
+        })
+    } else {
+        res.json({
+            ab: a.data
+        })
+    }
+})
+app.get('/getdetail', async (req, res) => {
+    let list = await global.db('building2').select("id", 'detail_id').where('province_id', 1)
+    for (let el of list) {
+        let id = el.detail_id.slice(el.detail_id.search('browsing_') + 9, el.detail_id.length)
+        let url = `https://www.realnetpro.com/room_detail.php?id=1227034&type=room`;
+        let html = await axios.get(url, {
+            headers: {
+                "cookie": `certification_key=392db865bc70fb93dd647f2d63f9fea7; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; page_method=estate; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; open_room=all; page_type=building; ini_pref=01; ini_pref_name=%E5%8C%97%E6%B5%B7%E9%81%93; transportation_id=-1; mybox_mode=insert; setting_number=1; method=estate; cookie_map_e=34.68795997593356%2C135.5268492668065; lat1=34.78994915274278; lng1=135.32772206954087; lat2=34.58584499251636; lng2=135.72597646407212; pref_code=01; square_meter_l=-1; square_meter_h=-1; route_id=1011%2C1051; gr=03AFY_a8WMg-BzJDX9M4C1Jd3U3STAghc37cfu5szHbFnC13hEMjOOHoEQGqYdJFV6brxXTxmAFp_7-2OB586PULTesYtie4cMXZdaJM1hdh4JH-P20-Md_B4kY3l2WUInhWOB6iL1F5uN3cOJ39W623CWbHz0VLQXsfJg3wF01y4yDdbEvvk8pI0RWJlseHGxUyXp4g503J5G9tJdZjND0Cyp0EFlevUUPQWVWZdjv2yON5r0SPS5C0oJQSV922zodhkZUU2pJvc0Wy54pPhAC4ekS6eZeU35RUvMLjj9gnu40N-CP5A64U1y58KP0_dWAvlsH0j5qJao_5IZcJOdSGCQifzsFw8C05ZztHboW3uPdISMZCJK0DhJ-ReWZx9_sVOLdCMDxtb60snGc-ZWWdQnypGCt40KehkDQc4ICdAmtIjYfsTxFeJcL-EqmullFbNy5OsCzbgYWc1uHALEwBcQpK8Yec8D_nzI_NlkUd7w5v_rI-mcmzioQe6pwU5VAiFc6Mn9vzEZeY7s32PnW8dcS274-JnlyotOgs-ynWyjy4uQ3QCaBe65DMOIMm_fUa81qKrn7WRv; PHPSESSID=creoi21c8kjef6iktuhl0ifteh; certification_key=2f690f8c55f28f041a58a2efd4d37c8a; _ga_9FXQTNH0JJ=GS1.1.1679632009.36.1.1679632012.0.0.0`,
+                'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
+                "origin": 'https://www.realnetpro.com',
+                "referer": "https://www.realnetpro.com/room_detail.php?id=5682631&type=room"
+            }
+        })
+        //https://file.realnetpro.com/photo/0010570/building/x-large/b0000212975142250873301.jpg?1679626560
+        //https://file.realnetpro.com/photo/0010570/building/x-large/b0000212975142250873301.jpg?1679626560
+        if (html.data) {
+            let $ = cheerio.load(html.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true })
+            let listimage = $('.photo_list_box .image_list img')
+            let list_img_url = ''
+            for (let img of listimage) {
+                let url = $(img).attr('src')
+                list_img_url = list_img_url + ',' + url
+            }
+            let infor = $('.room_info .basic_table tr')
+            let list_infor = []
+            for (let el of infor) {
+                let key = $(el).find('td.td_m').text()
+                if (key) {
+                    let value = $(el).find('td:nth-child(2)').text()
+                    if (value) {
+                        list_infor.push({
+                            key: key.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' '),
+                            value: value.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ')
+                        })
+                    }
+                }
+            }
+            let eq_user = $('.eq_user .room_info tr')
+            let list_infor_user = []
 
-    google.maps.event.addListener(this.map, 'zoom_changed', function () {
-        mc.map_area();
-        mc.get_zoom();
-        mc.map_search();
-    });
+            for (let el of eq_user) {
+                let key = $(el).find('.eq_td_m').text()
+                if (key) {
+                    let values = $(el).find('.eq_td_con span')
+                    let value = ''
+                    for (let elem of values) {
+                        let el = $(elem).text()
+                        value = value + ',' + el
+                    }
+                    list_infor_user.push({
+                        key: key.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' '),
+                        value: value.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ')
+                    })
 
+                }
+            }
+            if (list_infor.length > 0 && list_infor_user.length > 0) {
 
-}
-
-// åœ°å›³ã®ã‚¿ã‚¤ãƒ«èª­ã¿è¾¼ã¿å¾Œã«æ¤œç´¢(å‘¼ã³å‡ºã—ç”¨ã€€ä¾‹:ã‚¸ã‚ªã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã®æ¤œç´¢)
-map_control.prototype.loaded_search = function () {
-    var mc = this;
-    google.maps.event.addListenerOnce(mc.map, "tilesloaded", function () {
-        //console.log('ã‚¿ã‚¤ãƒ«');
-        mc.map_area();
-        mc.get_zoom();
-        mc.map_search();
-    });
-}
-
-
-// åœ°å›³ã®è¡¨ç¤ºç¯„å›²ï¼ˆå››éš…ã®åº§æ¨™ï¼‰ã‚’å–å¾—
-map_control.prototype.map_area = function () {
-    var cookie_lat = this.map.getCenter().lat();
-    var cookie_lng = this.map.getCenter().lng();
-    var bounds = this.map.getBounds();
-    var ne = bounds.getNorthEast();
-    var sw = bounds.getSouthWest();
-
-    this.bounds.ne.lat = ne.lat();
-    this.bounds.ne.lng = ne.lng();
-    this.bounds.sw.lat = sw.lat();
-    this.bounds.sw.lng = sw.lng();
-    this.center_latlang = cookie_lat + ',' + cookie_lng;
-
-
-    var center_latlang = cookie_lat + ',' + cookie_lng;
-    $('#cookie_map').val(center_latlang);
-    var map_param = { 'cookie_map_e': center_latlang }
-    //$.post( this.api_url, map_param)
-    //$('#cookie_lng').val(cookie_lng);
-    //var center_latlang = cookie_lat+','+cookie_lng;
-    //$.cookie('estate_center',center_latlang);
-
-}
-
-
-// ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã‚’å–å¾—
-map_control.prototype.get_zoom = function () {
-    zoomLevel = this.map.getZoom();
-    this.zoom = zoomLevel;
-
-}
-
-
-// åœ°å›³ã®ä¸­å¤®åº§æ¨™ã‚’å¤‰æ›´
-map_control.prototype.set_center = function (lat, lng) {
-    this.lat = lat;
-    this.lng = lng;
-    this.map.setCenter(new google.maps.LatLng(this.lat, this.lng));
-
-}
-
-
-// ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã‚’å¤‰æ›´
-map_control.prototype.set_zoom = function (zoom) {
-    this.zoom = zoom;
-    this.map.setZoom(this.zoom);
-
-}
-
-
-// ã‚¸ã‚ªã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã«ã‚ˆã‚‹åœ°å›³ã®ç§»å‹•
-map_control.prototype.geocoding = function (address) {
-    var mc = this;
-
-    this.geocoder.geocode(
-        {
-            address: address,
-            language: 'ja'
-
-        },
-        function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                mc.set_zoom(mc.geocoding_zoom);
-                mc.set_center(results[0].geometry.location.lat(), results[0].geometry.location.lng());
-                mc.loaded_search();
             }
 
+
         }
-
-    );
-
-}
-
-
-// 20180225 ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã«ã‚ˆã‚‹åˆ¶é™ã®éš›ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³
-map_control.prototype.show_zoom_level_alert = function (callback) {
-    if (!callback) {
-        callback = function () { };
-
+        break
     }
+})
+app.get('/thu', async (req, res) => {
+    let arr = []
+    for (let i = 1; i <= 27; i++) {
+        let list = await global.db('building2').select("id", 'line').where('province_id', i)
+        let list_city = await global.db('along_code').select("*").where('province_id', i)
+        console.log(list_city.length)
+        let listmoi = []
+        for (let el of list) {
+            let list_trung = []
+            for (let element of list_city) {
+                if (el.line.includes(element.AlongName)) {
+                    list_trung.push(element)
+                } else {
+                    if (el.line.includes(element.AlongShortName)) {
+                        list_trung.push(element)
+                    }
+                }
 
-    var txt = "åœ°å›³ã‚’æ‹¡å¤§ã™ã‚‹ã¨ç‰©ä»¶æƒ…å ±ãŒè¡¨ç¤ºã•ã‚Œã¾ã™";
-    if (this.seach_mode == "parking") {
-        txt = "åœ°å›³ã‚’æ‹¡å¤§ã™ã‚‹ã¨é§è»Šå ´æƒ…å ±ãŒè¡¨ç¤ºã•ã‚Œã¾ã™";
+            }
+            el.list_trung = list_trung
+            arr.push(el)
+            if (list_trung.length === 0) {
+                //   await global.db('building').update('city_category', 'no_city').where('id', el.id)
+                console.log(el.id, ' khong tim thay')
+
+                continue
+            }
+            if (list_trung.length === 1) {
+                console.log(el.id, ' tim thay')
+                // await global.db('building').update({
+                //     'city_category': 'city',
+                //     'city_id': list_trung[0].id
+                // }).where('id', el.id)
+                continue
+            }
+            if (list_trung.length > 1) {
+                let string = list_trung.map(e => e.id).toString()
+                console.log(el.id, ' tim thay nheieu')
+                //   await global.db('building').update('city_category', 'multi_city,' + string).where('id', el.id)
+            }
+
+
+            // listmoi.push({
+            //     id: el.id,
+            //     address: el.address,
+            //     city: list_trung
+            // })
+        }
+        break
     }
-    if (!$("div.map_zoom_alert")[0]) {
-        $("<div />")
-            .addClass("map_zoom_alert")
-            .css({
-                'background': '#ffffff',
-                'border': '2px solid #ff0000',
-                'border-radius': 5,
-                'position': 'absolute',
-                'top': '30%',
-                'left': 0,
-                'right': 0,
-                'margin': 'auto',
-                'width': 460,
-                'height': 46,
-                'line-height': '44px',
-                'font-size': '16px',
-                'text-align': 'center',
-                'opacity': 0.0
-
-            })
-            .text(txt)
-            .appendTo("div#" + this.map_id)
-            .animate({ 'opacity': 0.9 }, 500);
-
-    }
-
-}
-map_control.prototype.hide_zoom_level_alert = function (callback) {
-    if (!callback) {
-        callback = function () { };
-
-    }
-
-
-    $("div.map_zoom_alert")
-        .animate({ 'opacity': 0.0 }, 500)
-        .remove();
-
-}
-
-
-
-
-// ãƒ—ãƒ¬ã‚¤ã‚¹ã®å–å¾—ã¨ãƒªã‚¹ãƒˆåŒ–
-map_control.prototype.get_place = function (key, callback) {
-    var mc = this;
-
-    var type = "";
-    switch (key) {
-        case "å°å­¦æ ¡":
-            key = "å°å­¦æ ¡";
-            type = "school";
-            break;
-
-        case "ä¸­å­¦æ ¡":
-            key = "ä¸­å­¦";
-            type = "school";
-            break;
-
-        case "è­¦å¯Ÿç½²":
-            type = "police";
-            break;
-
-        case "éŠ€è¡Œ":
-            type = "bank";
-            break;
-
-        case "éƒµä¾¿å±€":
-            type = "post_office";
-            break;
-
-        case "ç¾Žå®¹å®¤":
-            type = "hair_care";
-            break;
-
-        case "ãƒ¬ã‚¹ãƒˆãƒ©ãƒ³":
-            type = "restaurant";
-            break;
-
-        case "ã‚«ãƒ•ã‚§":
-            type = "cafe";
-            break;
-
-        case "æ›¸åº—":
-            type = "book_store";
-            break;
-
-        case "ã‚¹ãƒ¼ãƒ‘ãƒ¼ãƒžãƒ¼ã‚±ãƒƒãƒˆ":
-            type = "grocery_or_supermarket";
-            key = "ã‚¹ãƒ¼ãƒ‘ãƒ¼"
-            break;
-
-        case "ã‚³ãƒ³ãƒ“ãƒ‹":
-            type = "convenience_store";
-            break;
-
-        case "ä¸å‹•ç”£æ¥­":
-            type = "real_estate_agency";
-            //key	= "è³ƒè²¸ç‰©ä»¶"
-            break;
-
-        case "é§…":
-            type = "station";
-            break;
-
-        case "ãƒã‚¹åœ":
-            type = "bus_station";
-            break;
-
-        default:
-            return false;
-            break;
-
-    }
-
-    // æ¤œç´¢
-    request = {
-        location: new google.maps.LatLng(mc.lat, mc.lng),
-        types: [type],
-        keyword: key,
-        rankBy: google.maps.places.RankBy.DISTANCE
-
-    };
-    mc.place.search(request, function (results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
-            // åˆæœŸåŒ–
-            mc.place_list = {};
-            mc.delete_place_marker();
-
-            // ãƒªã‚¹ãƒˆåŒ–å‡¦ç†
-            $.each(results, function () {
-                var id = this.id;
-                var name = this.name;
-                var lat = this.geometry.location.lat();
-                var lng = this.geometry.location.lng();
-                mc.place_list[this.id] = {
-                    'id': id,
-                    'name': name,
-                    'lat': lat,
-                    'lng': lng
-
-                };
-                var marker_option = {
-                    map: mc.map
-
-                };
-
-                marker_option.position = new google.maps.LatLng(lat, lng);
-                mc.place_marker[id] = new google.maps.Marker(marker_option);
-
-                // ãƒžãƒ¼ã‚«ãƒ¼ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ 
-                google.maps.event.addListener(mc.place_marker[id], 'click', function () {
-                    $("div.place_list div").css({ 'background': 'none' });
-                    $("div#" + id).css({ 'background': '#ffcccc' });
-                    mc.draw_direction(lat, lng);
-
+    console.log('end')
+    res.json({
+        a: arr
+    })
+})
+async function abcd(id) {
+    let arr = []
+    let check
+    let province_id = id
+    //
+    try {
+        for (let j = 1; j <= 27; j++) {
+            let code = ''
+            if (j < 10) {
+                code = '0' + j
+            } else {
+                code = j.toString()
+            }
+            for (let i = 0; i <= 4; i++) {
+                let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
+                    headers: {
+                        "cookie": `certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; ini_pref=${code}; ini_pref_name=%E7%A6%8F%E5%B3%B6; square_meter_l=-1; square_meter_h=-1; pref_code=${code}; gr=03AKH6MRHjjra8ridswtLESZleP889IQSbGaKZH2RYI5rLRNYSPTXTmzNqq81wuBRm2j67Np6-OTVguF2EWeMFlmwpS8LY3-0Lt5kms4eh1ThXnu5YBUzF5QXjtGc1FcFTg4fXBgDY8j2DKEKrk8QPpTDHEnr7WqSYANsZ8sC-XvLlBFZ1SPikOyntebRC_8rBEZs9k9PRP0Op42BKKprKkHfYjhPwp6-sPcY9-gouYAz2IKLjZtLhIchGcTWGP2Y2HthzPuMYAW1_vFlpF51cY-IdDdLFr0X88m_YFuOnHVWolUZ9VpmdCVWtMgosBbm2_L6SfqMpfTwnfoYylMghj6N-PKNrXEi6s6_d-0Ji81gKz7Q-U8Fb71E5IhU3SgiocGBnrujzIpE3IQE3N_4fMNRD075fafvQk1hZqb0M9dPpR8vEG2-BVU3Y01sIWnzGpH8ZEra7UfnabeCKvU4MVCESK6lfkquiyidSTwyqh7F5ByJ-mP1D1IRbiIa1wZl4exV-HnZhJgMqPL6_QmHlmqWgO1jzeCcdpJWM7NYsruf-uNLRLTA5OJh-AszAgNM6skNgwMxjwuZA; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361628.0.0.0`,
+                        'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
+                        "origin": 'https://www.realnetpro.com'
+                    }
                 });
 
-            });
-            callback();
+                if (f.data) {
 
-        }
-
-    });
-
-}
-
-
-// ã™ã¹ã¦ã®ãƒ—ãƒ¬ã‚¤ã‚¹ãƒžãƒ¼ã‚«ãƒ¼ã‚’å‰Šé™¤
-map_control.prototype.delete_place_marker = function () {
-    var mc = this;
-    $.each(mc.place_marker, function () {
-        this.setMap(null);
-
-    });
-
-};
-
-
-// 2ç‚¹é–“ã®é †è·¯ã‚’è¡¨ç¤º
-map_control.prototype.draw_direction = function (lat, lng) {
-    var mc = this;
-
-    mc.delete_direction();
-
-    var request = {
-        origin: new google.maps.LatLng(mc.lat, mc.lng),
-        destination: new google.maps.LatLng(lat, lng),
-        travelMode: google.maps.DirectionsTravelMode.WALKING
-
-    };
-
-    var latlng = lat + "-" + lng;
-    mc.direction.route(request, function (result, status) {
-        mc.direction_line[latlng] = new google.maps.DirectionsRenderer();
-        mc.direction_line[latlng].setDirections(result);
-        mc.direction_line[latlng].setMap(mc.map);
-
-    });
-
-}
-
-map_control.prototype.delete_direction = function () {
-    var mc = this;
-
-    $.each(mc.direction_line, function () {
-        this.setMap(null);
-
-    });
-
-}
+                    check = f.data
+                    let $ = cheerio.load(f.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
+                    let list = $('.main_contents .one_building')
+                    if (list) {
+                        check = $('div').hasClass('.main_contents')
+                        for (let element of list) {
+                            let name = $(element).find('.building_info .building_name').text()
+                            let images = $(element).find('img.building_photo').attr('src')
+                            let data = $(element).find('.building_info > div:nth-child(2)').text().trim()
+                            let phone = $(element).find('.building_company').text()
+                            let address = ''
+                            let line = ''
+                            let pdf = $(element).find('.building_data a').attr('href')
+                            if (data && data.length > 5) {
+                                let index = data.search('沿')
+                                if (index != -1) {
+                                    address = data.slice(3, index)
+                                    line = data.slice(index + 3, data.length)
+                                }
 
 
+                            }
+                            let rooms = $(element).find('.room_info_tr')
+                            let arr_rooms = []
+                            if (rooms) {
+                                for (let el of rooms) {
+                                    let id = $(el).find('.browsing_date').attr('id')
+                                    let yeucau = $(el).find('td .specify_n').text()
+                                    let layout = $(el).find('td .room_layout_image').attr('src')
+                                    let st_td = $(el).find('td.st_td').text()
+                                    let date = $(el).find('td:nth-child(6)').text()
+                                    let dientich = $(el).find('td:nth-child(7)').text()
+                                    let tien = $(el).find('td:nth-child(8)').text()
+                                    let key_money = $(el).find('td:nth-child(9)').text()
+                                    let datcoc = $(el).find('td:nth-child(10)').text()
+                                    let qc = $(el).find('td:nth-child(11)').text()
+                                    let infor_rooms = {
+                                        id: id ? id.trim() : "",
+                                        yeucau: yeucau ? yeucau.trim() : "",
+                                        layout: layout ? layout.trim() : "",
+                                        st_td: st_td ? st_td.trim() : "",
+                                        date: date ? date.trim() : "",
+                                        dientich: dientich ? dientich.trim() : "",
+                                        tien: tien ? tien.trim() : "",
+                                        key_money: key_money ? key_money.trim() : "",
+                                        datcoc: datcoc ? datcoc.trim() : "",
+                                        qc: qc ? qc.trim() : ""
+                                    }
+                                    arr_rooms.push(infor_rooms)
+                                }
+                            }
+                            let real_id = "";
+                            if (pdf) {
+                                real_id = pdf.slice(pdf.search('id=') + 3, pdf.length)
+                            }
+                            let el = {
+                                name: name ? name.trim() : '',
+                                real_id: real_id,
+                                address: address ? address.trim() : '',
+                                line: line ? line.trim() : '',
+                                infor: '',
+                                phone: phone ? phone.trim() : '',
+                                images: images ?? '',
+                                province_id: code,
+                                city_id: 'new',
+                                town_id: 'new',
+                                data: data,
+                                pdf: pdf ?? '',
+                                room: JSON.stringify(arr_rooms)
+                            }
+                            arr.push(el)
+                        }
+                    } else {
+                        check = $('div').hasClass('.main_contents')
 
-
-// ã‚¹ãƒˆãƒªãƒ¼ãƒˆãƒ“ãƒ¥ãƒ¼
-map_control.prototype.set_street_view = function () {
-    var mc = this;
-
-}
-
-
-
-
-// ç‰©ä»¶ã‚’æ¤œç´¢ã—ã¦ãƒªã‚¹ãƒˆã«æ ¼ç´
-map_control.prototype.map_search = function (callback) {
-    if (!callback) {
-        callback = this.list_function;
-
-    }
-
-    // 20180225 ã‚ºãƒ¼ãƒ ãƒ¬ãƒ™ãƒ«ã§æ¤œç´¢å‹•ä½œã‚’åˆ¶é™
-    /*$( "<div />" )
-            .css({
-                'background'	: '#ffffff',
-                'border'		: '2px solid #ff0000',
-                'border-radius'	: 5,
-                'position'		: 'absolute',
-                'bottom'		: 10,
-                'left'			: 10,
-                'width'			: 150,
-                'padding'		: '10px 20px'
-        	
-            })
-            .text( "ZOOM : " + this.zoom )
-            .appendTo( "div#" + this.map_id )*/
-    if (this.zoom_level_limit == 'Y' && this.zoom <= this.limit_zoom_level) {
-        this.show_zoom_level_alert();
-        this.delete_full_marker();
-        this.drop_full_data();
-        $('#cnt').val(0);
-        $('#num_room').text(0);
-        return false;
-
-    }
-    this.hide_zoom_level_alert();
-
-    // 20180225 æ¤œç´¢å‡¦ç†ä¸­ã®å†æ¤œç´¢ã‚’åˆ¶é™
-    if (this.seach_status == 'IN') {
-        return false;
-
-    }
-
-
-    // æ¤œç´¢æ¡ä»¶ã®è¨­å®š
-    var param = {};
-    param.cookie_map_e = this.center_latlang;
-    param.lat1 = this.bounds.ne.lat;
-    param.lng1 = this.bounds.sw.lng;
-    param.lat2 = this.bounds.sw.lat;
-    param.lng2 = this.bounds.ne.lng;
-
-    if (this.search_param) {
-        $.each(this.search_param, function (key) {
-            param[key] = this;
-
-        });
-
-    }
-
-    // æ¤œç´¢çµæžœã®å–å¾—
-    var mc = this;
-    mc.seach_status = 'IN';
-    $.post(mc.api_url, param, function (dd) {
-        mc.seach_status = 'OUT';
-        mc.cnt_current_data = 0;
-
-        if (dd && dd.match(/\[/)) {
-            var data = $.parseJSON(dd);
-            $.each(data, function () {
-                var latlng = this.lat + "-" + this.lng;
-                if (!mc.current_data[latlng] || mc.current_data[latlng]['cnt'] != this.cnt) {
-                    mc.current_data[latlng] = this;
-                    //console.log(mc.current_data[latlng]);
-
-                    if (mc.marker[latlng]) {
-                        mc.marker[latlng].setMap(null);
-                        delete mc.marker[latlng];
+                        break;
 
                     }
+                } else {
+                    check = false
+                    break;
 
                 }
-                mc.cnt_current_data++;
-
-            });
-            $('#cnt').val(0);
-            $('#num_room').text(0);
-            mc.drop_frameout_data();
-            mc.plot_marker();
-
-        } else {
-            $('#cnt').val(0);
-            $('#num_room').text(0);
-            mc.drop_full_data();
-            mc.delete_full_marker();
-
+                await global.db('building').insert(arr)
+                console.log(i, arr.length)
+                arr = []
+                await delay(5000)
+            }
         }
-        callback();
-
-    });
-
-};
-
-
-// ç¾åœ¨æ¡ä»¶ã§å†æ¤œç´¢ã€å†æç”»
-map_control.prototype.search = function () {
-    this.delete_full_marker();
-    this.drop_full_data();
-    this.map_search();
+    } catch (e) {
+        console.log('loi ', e)
+    }
+    console.log('end')
+    // await global.db('building').insert(arr)
 
 }
+app.get('*', async (req, res) => {
+    res.render('index')
+})
 
-
-// å–å¾—ã—ãŸç‰©ä»¶ã‚’ã™ã¹ã¦å‰Šé™¤
-map_control.prototype.drop_full_data = function () {
-    this.current_data = {};
-
-};
-
-
-// å–å¾—ã—ãŸç‰©ä»¶ã‹ã‚‰è¡¨ç¤ºç¯„å›²å¤–ã®ã‚‚ã®ã‚’å‰Šé™¤
-map_control.prototype.drop_frameout_data = function () {
-    var mc = this;
-    $.each(mc.current_data, function () {
-        // ãƒžãƒ¼ã‚«ãƒ¼ã®è¨­ç½®
-        var latlng = this.lat + "-" + this.lng;
-        var lat = this.lat;
-        var lng = this.lng;
-
-        if (
-            lat > mc.bounds.ne.lat ||
-            lng < mc.bounds.sw.lng ||
-            lat < mc.bounds.sw.lat ||
-            lng > mc.bounds.ne.lng
-
-        ) {
-            delete mc.current_data[latlng];
-
-        }
-
-    });
-
-};
-
-
-// ã™ã¹ã¦ã®ãƒžãƒ¼ã‚«ãƒ¼ã‚’å‰Šé™¤
-map_control.prototype.delete_full_marker = function () {
-    var mc = this;
-    $.each(mc.marker, function (latlng) {
-        if (mc.marker[latlng]) {
-            mc.marker[latlng].setMap(null);
-            delete mc.marker[latlng];
-
-        }
-
-    });
-
-};
-
-
-// è¡¨ç¤ºç¯„å›²å¤–ã®ãƒžãƒ¼ã‚«ãƒ¼ã‚’å‰Šé™¤
-map_control.prototype.delete_frameout_marker = function () {
-    var mc = this;
-    $.each(mc.marker, function (latlng) {
-        var lat = this.getPosition().lat();
-        var lng = this.getPosition().lng();
-
-        if (
-            lat > mc.bounds.ne.lat ||
-            lng < mc.bounds.sw.lng ||
-            lat < mc.bounds.sw.lat ||
-            lng > mc.bounds.ne.lng
-
-        ) {
-            if (mc.marker[latlng]) {
-                mc.marker[latlng].setMap(null);
-                delete mc.marker[latlng];
-
+async function town() {
+    // https://www.realnetpro.com/ajax/town.php?city_code=02202
+    for (let i = 7; i <= 20; i++) {
+        let min = i * 250;
+        let max = (i + 1) * 250;
+        let cityList = await global.db('city_code').select('*').where('id', '>=', min).andWhere('id', '<', max).andWhere('id', '>', 1806)
+        if (cityList.length > 0) {
+            for (let el of cityList) {
+                let f = await axios.get(`https://www.realnetpro.com/ajax/town.php?city_code=${el.code}`)
+                if (f.data) {
+                    let arr = f.data.map(e => {
+                        return {
+                            code: e.Code,
+                            name: e.Name,
+                            city_code: el.code
+                        }
+                    })
+                    await global.db('town_code').insert(arr)
+                }
+                console.log('insert ', el.code)
+                await delay(5000)
             }
 
-        }
-
-    });
-
-};
-
-
-// å–å¾—ã—ãŸç‰©ä»¶ã‚’ãƒ—ãƒ­ãƒƒãƒˆ
-map_control.prototype.plot_marker = function () {
-    var mc = this;
-    var input = $('#cnt').length;
-    if (input == '0' || input == '') {
-        var input_cnt = 'N'
-    } else {
-        var input_cnt = 'Y'
-        $('#cnt').val(0);
-    }
-    $.each(mc.current_data, function () {
-        var latlng = this.lat + "-" + this.lng;
-        var lat = this.lat;
-        var lng = this.lng;
-        var cnt = this.cnt;
-        var data = this;
-
-
-        if (input_cnt == 'N') {
         } else {
-            val = parseInt($('#cnt').val());
-            var all_cnt = val + cnt;
-            $('#cnt').val(all_cnt);
-            $('#num_room').text(all_cnt);
+            break
         }
+        console.log('next ', i)
 
-        // ãƒžãƒ¼ã‚«ãƒ¼ã®è¨­ç½®å‡¦ç†
-        if (!mc.marker[latlng]) {
-            var marker_option = {
-                map: mc.map
+    }
+    console.log('end')
+}
 
-            };
-            if (mc.icon && mc.icon != "") {
-                var marker_image = new google.maps.MarkerImage(
-                    mc.icon,
-                    new google.maps.Size(mc.icon_size, mc.icon_size)
-                    //new google.maps.Point( 0, 0 )
+//certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; ini_pref=07; ini_pref_name=%E7%A6%8F%E5%B3%B6; square_meter_l=-1; square_meter_h=-1; pref_code=07; gr=03AKH6MRHjjra8ridswtLESZleP889IQSbGaKZH2RYI5rLRNYSPTXTmzNqq81wuBRm2j67Np6-OTVguF2EWeMFlmwpS8LY3-0Lt5kms4eh1ThXnu5YBUzF5QXjtGc1FcFTg4fXBgDY8j2DKEKrk8QPpTDHEnr7WqSYANsZ8sC-XvLlBFZ1SPikOyntebRC_8rBEZs9k9PRP0Op42BKKprKkHfYjhPwp6-sPcY9-gouYAz2IKLjZtLhIchGcTWGP2Y2HthzPuMYAW1_vFlpF51cY-IdDdLFr0X88m_YFuOnHVWolUZ9VpmdCVWtMgosBbm2_L6SfqMpfTwnfoYylMghj6N-PKNrXEi6s6_d-0Ji81gKz7Q-U8Fb71E5IhU3SgiocGBnrujzIpE3IQE3N_4fMNRD075fafvQk1hZqb0M9dPpR8vEG2-BVU3Y01sIWnzGpH8ZEra7UfnabeCKvU4MVCESK6lfkquiyidSTwyqh7F5ByJ-mP1D1IRbiIa1wZl4exV-HnZhJgMqPL6_QmHlmqWgO1jzeCcdpJWM7NYsruf-uNLRLTA5OJh-AszAgNM6skNgwMxjwuZA; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361628.0.0.0
+//certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; ini_pref_name=%E5%AE%AE%E5%9F%8E; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; square_meter_l=-1; square_meter_h=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; gr=03AFY_a8VqynB7WHCdxKmiJnzuKJCTu0f56UfY8AhH2p6EK5DSsCNblsZojE8hZgOikmTlaJ_O6GU9ExYU0Qdr2TR1Vw6irUAbMesQBPvD45tXkoDUKEQNOafKHEe0u2nPYC9PXd-Jl7kuLhVHvb4NK8Ue4NML2mIry0bV-KRRJVZYKnwZFJLa5JQjOIDFFCnduL_O1x93N5J02Buk5YX6QtS6KIgDhIBUe6u3KwIunTDCAeiwcAI6d8AtRyQSDj1-BoMmg0lzAMxFhcIV35EIjn6rxs4EC9L2fW9uxuTt4HG0HaJ2RkFC77FJdTah0SwkwCuTvcArvSHHn8e5VOA18UsF6rKaNeolUK0h_OLGVUa2AbQDRPITNlsV2gDATcDdX50Y6HINXF9hEq8H5OJ_i09cBESibdwxD_qahM7Ti6vlhSyBz-PWvv0m1hk1lcHE2THLKgRanAruf5WFnJR3AT9ih5D-uAA9EUFYWl5FvtnHjd7RWk2xTBB60u7pxrotbCHafALDF5_sZOBjCMSASEM4l0UdIx5Z7DfvNARM3VsWlv5Ni3UfzEGoWAbkSNz5Uy5jkrUAY-6u; pref_code=05; ini_pref=06; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361481.0.0.0
+async function addbuildingtoVps() {
+    for (let i = 24; i <= 27; i++) {
+        let alist = await global.db('building2').select('*').where('province_id', i).andWhere('status', 1).andWhere('id', '>', 3276)
+        for (let el of alist) {
+            console.log(i, ' o ', el.id)
+            delete el.id
+            delete el.created_at
+            delete el.updated_at
+            let a = await axios.post('http://157.230.27.124:2021/api/build', {
+                mod: 'add',
+                list: el
+            }, {
+                headers: {
+                    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhTWFpbiI6eyJJZCI6MSwiZGlzcGxheV9uYW1lIjoiYWRtaW4xIn0sImlhdCI6MTY3OTgwNTM4OCwiZXhwIjoxNjc5ODkxNzg4fQ.nNAka6rv3If8R8om010d6t5z5XPXONe56WMUlwk2mCM"
+                }
+            })
+            if (!a.data) {
+                console.log('errr')
+                return
+            }
+            await delay(1000)
 
-                );
-                marker_option.icon = marker_image;
+        }
+        console.log('next')
+    }
+    console.log('end')
+}
+
+//price 
+//years 
+//area 
+//date 
+//fee 
+//detail_id
+
+
+async function phanload() {
+    for (let i = 1; i <= 27; i++) {
+        let list = await global.db('building').select("id", 'address').where('province_id', i)
+        let list_city = await global.db('city_code').select("*").where('province_code', i)
+        let listmoi = []
+        for (let el of list) {
+            let list_trung = []
+            for (let element of list_city) {
+                if (el.address.includes(element.name)) {
+                    list_trung.push(element)
+                }
+            }
+            console.log('next ', i, list_trung.length)
+            if (list_trung.length === 0) {
+                await global.db('building').update('city_category', 'no_city').where('id', el.id)
+                continue
+            }
+            if (list_trung.length === 1) {
+                await global.db('building').update({
+                    'city_category': 'city',
+                    'city_id': list_trung[0].id
+                }).where('id', el.id)
+                continue
+            }
+            if (list_trung.length > 1) {
+                let string = list_trung.map(e => e.id).toString()
+
+                await global.db('building').update('city_category', 'multi_city,' + string).where('id', el.id)
+            }
+
+            // listmoi.push({
+            //     id: el.id,
+            //     address: el.address,
+            //     city: list_trung
+            // })
+        }
+    }
+
+}
+async function phanloadtheonhaga() {
+    for (let i = 1; i <= 27; i++) {
+        let list = await global.db('building2').select("id", 'line').where('province_id', i)
+        let list_city = await global.db('along_code').select("*").where('province_id', i)
+        console.log(list_city.length)
+        let listmoi = []
+        for (let el of list) {
+            let list_trung = []
+            for (let element of list_city) {
+                if (el.line.includes(element.AlongName)) {
+                    list_trung.push(element)
+                } else {
+                    if (el.line.includes(element.AlongShortName)) {
+                        list_trung.push(element)
+                    }
+                }
 
             }
 
-            if (mc.marker_label == 'Y') {
-                var label = 'å¤š';
-                if (cnt < 10) {
-                    label = String(cnt)
-
-                }
-                marker_option.label = {
-                    text: label,
-                    color: '#ffffff'
-
-                }
-
+            if (list_trung.length === 0) {
+                await global.db('building2').update('along_category', 'no_along').where('id', el.id)
+                console.log(el.id, ' khong tim thay')
+                continue
             }
-            marker_option.position = new google.maps.LatLng(lat, lng);
-            mc.marker[latlng] = new google.maps.Marker(marker_option);
+            if (list_trung.length === 1) {
+                console.log(el.id, ' tim thay')
+                await global.db('building2').update({
+                    'along_category': 'along',
+                    'along_id': list_trung[0].id
+                }).where('id', el.id)
+                continue
+            }
+            if (list_trung.length > 1) {
+                let string = list_trung.map(e => e.id).toString()
+                console.log(el.id, ' tim thay nheieu')
+                await global.db('building2').update('along_category', 'multi_along,' + string).where('id', el.id)
+            }
 
-            // ãƒžãƒ¼ã‚«ãƒ¼ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ 
-            google.maps.event.addListener(mc.marker[latlng], 'click', function () {
-                mc.marker_function({
-                    latlng: latlng,
-                    lat: lat,
-                    lng: lng,
-                    cnt: cnt,
-                    data: data
-
-                });
-
-            });
-
+            // listmoi.push({
+            //     id: el.id,
+            //     address: el.address,
+            //     city: list_trung
+            // })
         }
-
-    });
-    mc.delete_frameout_marker();
-
-};
-
-
-// å€‹åˆ¥ãƒžãƒ¼ã‚«ãƒ¼ã‚’ãƒ—ãƒ­ãƒƒãƒˆ
-map_control.prototype.plot_solo_marker = function (param) {
-    var mc = this;
-
-    // ãƒžãƒ¼ã‚«ãƒ¼ã®è¨­å®š
-    var marker_option = {
-        map: mc.map,
-        position: new google.maps.LatLng(param.lat, param.lng)
-
-    };
-    if (param.icon) {
-        marker_option.icon = new google.maps.MarkerImage(
-            param.icon
-
-        );
-
+        console.log('next ')
     }
+    console.log('end')
 
-    // ãƒžãƒ¼ã‚«ãƒ¼ã®è¨­ç½®
-    mc.solo_marker[param.marker_id] = new google.maps.Marker(marker_option);
+}
+async function getdetail() {
 
-    // ãƒžãƒ¼ã‚«ãƒ¼ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ 
-    google.maps.event.addListener(mc.solo_marker[param.marker_id], 'click', function () {
-        //sample_func( room_id );
+    for (let i = 12; i <= 27; i++) {
+        let status = 'false'
+        let list = await global.db('building2').select("id", 'detail_id').where('province_id', i).andWhere('id', '>', 1518)
+        for (let room of list) {
+            await delay(1000)
+            let id = room.detail_id.slice(room.detail_id.search('browsing_') + 9, room.detail_id.length)
+            let url = `https://www.realnetpro.com/room_detail.php?id=${id}&type=room`;
+            let html = await axios.get(url, {
+                headers: {
+                    "cookie": `certification_key=392db865bc70fb93dd647f2d63f9fea7; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=all; page_type=building; ini_pref=01; PHPSESSID=creoi21c8kjef6iktuhl0ifteh; certification_key=0803ffbbbfc5bb1660c5e2e31b2fbf47; _ga_9FXQTNH0JJ=GS1.1.1679733547.42.1.1679733559.0.0.0`,
+                    'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
+                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
+                    "origin": 'https://www.realnetpro.com',
+                    "referer": "https://www.realnetpro.com/room_detail.php?id=5682631&type=room"
+                }
+            })
+            if (html.data) {
+                let $ = cheerio.load(html.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true })
+                let listimage = $('.photo_list_box .image_list img')
+                let list_img_url = ''
+                for (let img of listimage) {
+                    let url = $(img).attr('src')
+                    list_img_url = list_img_url + ',' + url
+                }
+                let infor = $('.room_info .basic_table tr')
+                let list_infor = []
+                let fee = ''
+                for (let el of infor) {
+                    let key = $(el).find('td.td_m').text()
+                    if (key) {
+                        let value = $(el).find('td:nth-child(2)').text()
+                        if (value) {
+                            if (key.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ') == '保証金 / 敷引・償却') {
+                                fee = value.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ')
+                            }
+                            list_infor.push({
+                                key: key.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' '),
+                                value: value.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ')
+                            })
+                        }
+                    }
+                }
+                let eq_user = $('.eq_user .room_info tr')
+                let list_infor_user = []
 
-    });
+                for (let el of eq_user) {
+                    let key = $(el).find('.eq_td_m').text()
+                    if (key) {
+                        let values = $(el).find('.eq_td_con span')
+                        let value = ''
+                        for (let elem of values) {
+                            let el = $(elem).text()
+                            value = value + ',' + el
+                        }
+                        list_infor_user.push({
+                            key: key.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' '),
+                            value: value.trim().replace(/\n|\r/g, "").replace(/\s+/g, ' ')
+                        })
 
-};
+                    }
+                }
+                if (list_infor.length > 0 && list_infor_user.length > 0) {
+                    await global.db('building2').update({
+                        "list_infor_user": JSON.stringify(list_infor_user),
+                        "list_infor_room": JSON.stringify(list_infor),
+                        "fee": fee,
+                        "list_img_url": list_img_url
 
+                    }).where('id', room.id)
+                    status = 'true'
+                    console.log('da up ', room.id)
 
-// å€‹åˆ¥ãƒžãƒ¼ã‚«ãƒ¼ã‚’å‰Šé™¤
-map_control.prototype.delete_solo_marker = function (marker_id) {
-    var mc = this;
-    if (mc.solo_marker[marker_id]) {
-        mc.solo_marker[marker_id].setMap(null);
+                } else {
+                    console.log('err ', room.id)
+                }
 
+            } else {
+                return
+            }
+        }
     }
+    console.log('end')
+}
+var download = function (uri, filename, callback) {
+    request.head(uri, function (err, res, body) {
+        console.log('content-type:', res.headers['content-type']);
+        console.log('content-length:', res.headers['content-length']);
 
+        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+    });
 };
 
 
+async function updatedata() {
+    for (let i = 1; i <= 27; i++) {
+        let alist = await global.db('building2').select('*').where('province_id', i).limit(20)
+        
+        download('https://file.realnetpro.com/photo/0044993/building/large/b0001117222167865303201.jpg', 'b0001117222167865303201.jpg', function () {
+            console.log('done');
+        });
+        break
+    }
+}
+// table.string('code', 255).notNullable();
+// table.string('name', 255).notNullable();
+// table.integer('city_code', 11).notNullable();
+// let $ = cheerio.load(`<td class="building_info">
+// <div class="building_name">
+//     <font _mstmutation="1">
+//         グランデール英II </font><input type="hidden" class="room_cnt" value="2">
+// </div>
+// <div>
+//     住所：大阪市天王寺区南河堀町<br>
+//     沿線：環状線「寺田町」徒歩4分
+// </div> downloadimg
+// <!--div>
+// お問合せ先：サンプル不動産 ◯◯◯◯◯◯店
+// </div-->
+// </td>`, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
+// let data = $('.building_info > div:nth-child(2)').text().trim();
 
+server.listen(config.SPort, function () {
+    console.log("API Init Completed in Port " + config.SPort);
+
+})

@@ -8,7 +8,8 @@
       },
       "build": {
         "list": "all",
-        "detail":"all"
+        "detail":"all",
+        "list_ga":"all"
       },
       "location": {
         "list_province": "all",
@@ -17,6 +18,13 @@
       },
       "my_build": {
         "list": "all"
+      },
+      "nha_ga":{
+        "list":"all"
+      },
+      "khuyenmai":{
+        "list":"all"
+        
       }
     },
     "post": {
@@ -27,7 +35,8 @@
       "build": {
         "add": "1,2",
         "list": "all",
-        "delete": "1,2"
+        "delete": "1,2",
+        "list_ga":"all"
       },
       "my_build": {
         "add": "all",

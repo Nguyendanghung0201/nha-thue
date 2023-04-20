@@ -275,57 +275,21 @@ app.get('/getdetail', async (req, res) => {
 })
 app.get('/thu', async (req, res) => {
     let arr = []
-    for (let i = 1; i <= 27; i++) {
-        let list = await global.db('building2').select("id", 'line').where('province_id', i)
-        let list_city = await global.db('along_code').select("*").where('province_id', i)
-        console.log(list_city.length)
-        let listmoi = []
-        for (let el of list) {
-            let list_trung = []
-            for (let element of list_city) {
-                if (el.line.includes(element.AlongName)) {
-                    list_trung.push(element)
-                } else {
-                    if (el.line.includes(element.AlongShortName)) {
-                        list_trung.push(element)
-                    }
-                }
-
+    for (let i = 1; i <= 20; i++) {
+        let list = await global.db('building2').select("id", 'line').where('province_id', i).orderByRaw('RAND()').limit(50)
+        let data = list.map(e => {
+            return {
+                build_id: e.id,
+                nha_ga_id: i,
+                status: 1
             }
-            el.list_trung = list_trung
-            arr.push(el)
-            if (list_trung.length === 0) {
-                //   await global.db('building').update('city_category', 'no_city').where('id', el.id)
-                console.log(el.id, ' khong tim thay')
+        })
+        await global.db("nha_ga_build").insert(data)
 
-                continue
-            }
-            if (list_trung.length === 1) {
-                console.log(el.id, ' tim thay')
-                // await global.db('building').update({
-                //     'city_category': 'city',
-                //     'city_id': list_trung[0].id
-                // }).where('id', el.id)
-                continue
-            }
-            if (list_trung.length > 1) {
-                let string = list_trung.map(e => e.id).toString()
-                console.log(el.id, ' tim thay nheieu')
-                //   await global.db('building').update('city_category', 'multi_city,' + string).where('id', el.id)
-            }
-
-
-            // listmoi.push({
-            //     id: el.id,
-            //     address: el.address,
-            //     city: list_trung
-            // })
-        }
-        break
     }
     console.log('end')
     res.json({
-        a: arr
+        a: "arr"
     })
 })
 async function abcd(id) {
@@ -676,8 +640,8 @@ async function getdetail() {
                 }
                 if (list_infor.length > 0 && list_infor_user.length > 0) {
                     await global.db('building2').update({
-                        "list_infor_user": JSON.stringify(list_infor_user),
-                        "list_infor_room": JSON.stringify(list_infor),
+                        "list_infor_user": JSON.stringify({data :list_infor_user} ),
+                        "list_infor_room": JSON.stringify({data :list_infor} ),
                         "fee": fee,
                         "list_img_url": list_img_url
 
@@ -709,7 +673,7 @@ var download = function (uri, filename, callback) {
 async function updatedata() {
     for (let i = 1; i <= 27; i++) {
         let alist = await global.db('building2').select('*').where('province_id', i).limit(20)
-        
+
         download('https://file.realnetpro.com/photo/0044993/building/large/b0001117222167865303201.jpg', 'b0001117222167865303201.jpg', function () {
             console.log('done');
         });
