@@ -3,9 +3,9 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-    return knex.schema.hasTable('khuyen_mai').then(exists => {
+    return knex.schema.hasTable('khuyen').then(exists => {
         if (!exists) {
-            return knex.schema.createTable('khuyen_mai', table => {
+            return knex.schema.createTable('khuyen', table => {
                 table.increments('id');
                 table.text('content').nullable();
                 table.integer('status', 11).notNullable().defaultTo(1);
@@ -14,7 +14,6 @@ exports.up = function(knex) {
             });
         }
     });
-  
 };
 
 /**
@@ -22,5 +21,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema.dropTable('khuyen_mai');
+    return knex.schema.dropTable('khuyen');
 };

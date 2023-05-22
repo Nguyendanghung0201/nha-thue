@@ -280,11 +280,11 @@ app.get('/thu', async (req, res) => {
         let data = list.map(e => {
             return {
                 build_id: e.id,
-                nha_ga_id: i,
+                khuyen_id: Math.floor(Math.random() * 2) ? 1 : 2,
                 status: 1
             }
         })
-        await global.db("nha_ga_build").insert(data)
+        await global.db("khuyen_mai_build").insert(data)
 
     }
     console.log('end')
@@ -640,8 +640,8 @@ async function getdetail() {
                 }
                 if (list_infor.length > 0 && list_infor_user.length > 0) {
                     await global.db('building2').update({
-                        "list_infor_user": JSON.stringify({data :list_infor_user} ),
-                        "list_infor_room": JSON.stringify({data :list_infor} ),
+                        "list_infor_user": JSON.stringify({ data: list_infor_user }),
+                        "list_infor_room": JSON.stringify({ data: list_infor }),
                         "fee": fee,
                         "list_img_url": list_img_url
 
