@@ -48,7 +48,7 @@ app.use(function (req, res, next) {
 const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
-
+const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=en&api-version=3.0&includeSentenceLength=true'
 app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
 
     let dataReponse = null;
@@ -165,30 +165,56 @@ app.get('/craw', async (req, res) => {
         f: 'a'
     })
 })
+async function dichchu(a, Bearer) {
+    try {
+        let b = await axios.post(url_dich, a, {
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: 'Bearer ' + Bearer
+            }
+        })
+        if (b.status == 200) {
+            let text = b.data ?? false
+            return text
+        } else {
+            return false
+        }
+    } catch (e) {
+        return false
+    }
+
+
+}
 app.get('/test', async (req, res) => {
-    // let list = await global.db('building').select("id", 'address').where('province_id', 7).limit(20)
+    let token = await axios.get('https://edge.microsoft.com/translate/auth', {
+        headers: { "content-type": "text/plain" }
+    })
+    for (let j = 1; j <= 47; j++) {
+        let list = await global.db('city_code').select("id", 'name').where('province_code', j).limit(15)
+        let Bearer = ''
+        if (token.status == 200) {
+            Bearer = token.data
+        }
+        let arr = list.map(e => {
+            return {
+                Text: e.name
+            }
+        })
 
-    // let list_city = await global.db('city_code').select("*").where('province_code', 7)
-    // let listmoi = []
-    // for (let el of list) {
-    //     let list_trung = []
-    //     for (let element of list_city) {
-    //         if (el.address.includes(element.name)) {
-    //             list_trung.push(element)
-    //         }
-    //     }
-    //     listmoi.push({
-    //         id: el.id,
-    //         address: el.address,
-    //         city: list_trung
-    //     })
-    // }
-    // res.json({
-    //     kq: listmoi
-    // })
+        let b = await dichchu(arr, Bearer)
+        let index = 0
+        for (let el of b) {
+            let el_en = el.translations[0].text
+            await global.db('city_code').update({
+                'name_en': el_en
+            }).where('id', list[index].id)
+            index++
 
-    let a = await global.db('building').select("*").where('id', 7)
-    res.send(a[0].room)
+        }
+    }
+    res.json({
+        ok: 'ok'
+    })
 
 })
 app.get('/company', async (req, res) => {
@@ -292,6 +318,14 @@ app.get('/thu', async (req, res) => {
         a: "arr"
     })
 })
+app.post('/update_database', async (req, res) => {
+    let { table, data } = req.body;
+    await global.db(table).insert(data)
+    res.json({
+        status: true
+    })
+})
+
 async function abcd(id) {
     let arr = []
     let check
@@ -478,13 +512,6 @@ async function addbuildingtoVps() {
     }
     console.log('end')
 }
-
-//price 
-//years 
-//area 
-//date 
-//fee 
-//detail_id
 
 
 async function phanload() {
@@ -680,23 +707,7 @@ async function updatedata() {
         break
     }
 }
-// table.string('code', 255).notNullable();
-// table.string('name', 255).notNullable();
-// table.integer('city_code', 11).notNullable();
-// let $ = cheerio.load(`<td class="building_info">
-// <div class="building_name">
-//     <font _mstmutation="1">
-//         グランデール英II </font><input type="hidden" class="room_cnt" value="2">
-// </div>
-// <div>
-//     住所：大阪市天王寺区南河堀町<br>
-//     沿線：環状線「寺田町」徒歩4分
-// </div> downloadimg
-// <!--div>
-// お問合せ先：サンプル不動産 ◯◯◯◯◯◯店
-// </div-->
-// </td>`, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
-// let data = $('.building_info > div:nth-child(2)').text().trim();
+
 
 server.listen(config.SPort, function () {
     console.log("API Init Completed in Port " + config.SPort);
