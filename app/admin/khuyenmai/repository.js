@@ -40,13 +40,20 @@ class khuyenmai_repository {
     async insert_build(dataInsert) {
         return await db(this.db).insert(dataInsert);
     }
-
-    async get_list() {
-        return await db('khuyen_mai').innerJoin('khuyen_mai_build', 'khuyen_mai.id', 'khuyen_mai_build.khuyen_id')
-            .innerJoin("building2","building2.id","khuyen_mai_build.build_id")
-            .select('building2.*', 'khuyen_mai.id as khuyen_mai_id','khuyen_mai.content')
-            .orderByRaw('RAND()').limit(15)
+    async add(query){
+        return await db('khuyen_mai').insert({
+            content:query.content
+        })
     }
+
+    
+
+    async delete(uid) {
+        return await db(this.db).delete().where(this.column.id, uid)
+    }
+
+
+
 
 }
 
