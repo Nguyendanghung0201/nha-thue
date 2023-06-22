@@ -61,6 +61,11 @@ class build_repository {
         return await sql
     }
 
+    async get_list_gan(city) {
+        return await db(this.db).select('*').where('status', 1).andWhere('city_id', city)
+        .orderByRaw('RAND()').limit(15)
+    }
+
     async getMybuild(user_id) {
         return await db('my_build').select('buiding_id').where('my_build.user_id', user_id)
     }
@@ -75,10 +80,12 @@ class build_repository {
     async check(uid, buiding_id) {
         return await db('my_build').select('*').where('user_id', uid).andWhere('buiding_id', buiding_id).first()
     }
-    async get_list_ga( page,id_ga) {
-        return await db('nha_ga_build').innerJoin('building2', 'building2.id', 'nha_ga_build.build_id').select('building2.*','nha_ga_build.nha_ga_id')
+    async get_list_ga(page, id_ga) {
+        return await db('nha_ga_build').innerJoin('building2', 'building2.id', 'nha_ga_build.build_id').select('building2.*', 'nha_ga_build.nha_ga_id')
             .orWhereIn('nha_ga_build.nha_ga_id', id_ga).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
+
+
 }
 
 module.exports = new build_repository();
