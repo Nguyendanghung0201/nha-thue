@@ -4,12 +4,12 @@
       "users": {
         "logout": "all",
         "my_profile": "all",
-        "list_ref":"all"
+        "list_ref": "all"
       },
       "build": {
         "list": "all",
-        "detail":"all",
-        "list_ga":"all"
+        "detail": "all",
+        "list_ga": "all"
       },
       "location": {
         "list_province": "all",
@@ -19,12 +19,11 @@
       "my_build": {
         "list": "all"
       },
-      "nha_ga":{
-        "list":"all"
+      "nha_ga": {
+        "list": "all"
       },
-      "khuyenmai":{
-        "list":"all"
-        
+      "khuyenmai": {
+        "list": "all"
       }
     },
     "post": {
@@ -36,11 +35,19 @@
         "add": "1,2",
         "list": "all",
         "delete": "1,2",
-        "list_ga":"all"
+        "list_ga": "all"
       },
       "my_build": {
         "add": "all",
         "delete": "all"
+      },
+      "location": {
+        "add": "1,2",
+        "update": "1,2",
+        "delete":"1,2",
+        "add_along": "1,2",
+        "update_along": "1,2",
+        "delete_along":"1,2"
       }
     },
     "put": {
