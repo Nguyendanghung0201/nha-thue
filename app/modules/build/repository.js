@@ -42,28 +42,21 @@ class build_repository {
     }
 
     async get_list(query) {
-        let sql
+
         if (query.city_code) {
-            sql = db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code)
+            return await db(this.db).select('*').where('status', 1).andWhere('city_id', query.city_code).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
         }
-        if (query.province_code) {
-            sql = db(this.db).select('*').where('status', 1).andWhere('province_id', query.province_code)
-        } else {
-            sql = db(this.db).select('*').where('status', 1)
 
-        }
         if (query.along_code) {
-            sql = sql.andWhere('along_id', query.along_code).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
-        } else {
-            sql = sql.paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
-
+            return await db(this.db).select('*').where('status', 1).andWhere('along_id', query.along_code).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
         }
-        return await sql
+        return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
+
     }
 
     async get_list_gan(city) {
         return await db(this.db).select('*').where('status', 1).andWhere('city_id', city)
-        .orderByRaw('RAND()').limit(15)
+            .orderByRaw('RAND()').limit(15)
     }
 
     async getMybuild(user_id) {
