@@ -35,7 +35,8 @@
         "add": "1,2",
         "list": "all",
         "delete": "1,2",
-        "list_ga": "all"
+        "list_ga": "all",
+        "update":"1,2"
       },
       "my_build": {
         "add": "all",

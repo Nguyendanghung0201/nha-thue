@@ -22,8 +22,9 @@ exports.add = async function (query) {
 }
 
 exports.update = async function (query) {
-    await buildRes.update(query.id, query.data,)
+    await buildRes.update(query.id, query.data)
     return {
+
         status: true,
         msg: "success",
         code: 0,
