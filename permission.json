@@ -24,7 +24,7 @@
       },
       "khuyenmai": {
         "list": "all",
-        "list_admin":"1,2"
+        "list_admin": "1,2"
       }
     },
     "post": {
@@ -53,7 +53,8 @@
       },
       "khuyenmai": {
         "add": "1,2",
-        "delete": "1,2"
+        "delete": "1,2",
+        "update": "1,2"
       }
     },
     "put": {
