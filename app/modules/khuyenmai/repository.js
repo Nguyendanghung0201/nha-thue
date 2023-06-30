@@ -41,9 +41,15 @@ class khuyenmai_repository {
         return await db(this.db).insert(dataInsert);
     }
 
-    async get_list() {
+    async get_list3() {
         return await db('khuyen_mai').innerJoin('khuyen_mai_build', 'khuyen_mai.id', 'khuyen_mai_build.khuyen_id')
             .innerJoin("building2","building2.id","khuyen_mai_build.build_id")
+            .select('building2.*', 'khuyen_mai.id as khuyen_mai_id','khuyen_mai.content')
+            .orderByRaw('RAND()').limit(15)
+    }
+    async get_list() {
+        return await db('khuyen_mai')
+            .innerJoin("building2","building2.khuyenmai","khuyen_mai.id")
             .select('building2.*', 'khuyen_mai.id as khuyen_mai_id','khuyen_mai.content')
             .orderByRaw('RAND()').limit(15)
     }
