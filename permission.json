@@ -23,7 +23,8 @@
         "list": "all"
       },
       "khuyenmai": {
-        "list": "all"
+        "list": "all",
+        "list_admin":"1,2"
       }
     },
     "post": {

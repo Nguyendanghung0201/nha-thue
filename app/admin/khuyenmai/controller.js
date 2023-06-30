@@ -20,6 +20,6 @@ exports.delete = async () => {
 
     return model.delete(query)
 }
-exports.list =  async () => {
+exports.list_admin =  async () => {
     return model.list()
 }
