@@ -36,7 +36,7 @@
         "list": "all",
         "delete": "1,2",
         "list_ga": "all",
-        "update":"1,2"
+        "update": "1,2"
       },
       "my_build": {
         "add": "all",
@@ -45,10 +45,14 @@
       "location": {
         "add": "1,2",
         "update": "1,2",
-        "delete":"1,2",
+        "delete": "1,2",
         "add_along": "1,2",
         "update_along": "1,2",
-        "delete_along":"1,2"
+        "delete_along": "1,2"
+      },
+      "khuyenmai": {
+        "add": "1,2",
+        "delete": "1,2"
       }
     },
     "put": {

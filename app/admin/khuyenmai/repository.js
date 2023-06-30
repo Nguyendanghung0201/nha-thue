@@ -40,17 +40,24 @@ class khuyenmai_repository {
     async insert_build(dataInsert) {
         return await db(this.db).insert(dataInsert);
     }
-    async add(query){
+    async add(query) {
         return await db('khuyen_mai').insert({
-            content:query.content
+            content: query.content
         })
     }
 
-    
+
 
     async delete(uid) {
         return await db(this.db).delete().where(this.column.id, uid)
     }
+
+
+    async list() {
+        return await db(this.db).select('*')
+    }
+
+
 
 
 
