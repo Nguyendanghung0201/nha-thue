@@ -1,6 +1,6 @@
 const model = require('./model')
 // theem dong khuyen mai
-exports.add = async () => {
+exports.add = async (query) => {
     let validate = await val.Form(query, {
         content: "required",
     });
@@ -10,7 +10,7 @@ exports.add = async () => {
 
     return model.add(query)
 }
-exports.delete = async () => {
+exports.delete = async (query) => {
     let validate = await val.Form(query, {
         id: "required",
     });
