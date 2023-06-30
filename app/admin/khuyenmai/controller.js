@@ -20,6 +20,18 @@ exports.delete = async (query) => {
 
     return model.delete(query)
 }
+
+exports.update = async (query) => {
+    let validate = await val.Form(query, {
+        id: "required",
+        content:"required"
+    });
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
+    }
+
+    return model.update(query)
+}
 exports.list_admin =  async () => {
     return model.list()
 }

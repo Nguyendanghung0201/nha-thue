@@ -45,6 +45,11 @@ class khuyenmai_repository {
             content: query.content
         })
     }
+    async update(id, content) {
+        return await db('khuyen_mai').update({
+            content: content
+        }).where('id', id)
+    }
 
 
 

@@ -18,6 +18,15 @@ exports.delete = async function (query) {
     }
 }
 
+exports.update = async function (query) {
+    let result = await rep.update(query.id, query.content)
+    return {
+        status: true,
+        code: 0,
+        msg: 'success',
+        data: result
+    }
+}
 exports.list = async function () {
     let result = await rep.list()
     return {
