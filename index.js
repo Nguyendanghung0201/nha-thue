@@ -18,13 +18,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", "./app/views");
 app.use(express.static('public'));
+const path = require('path');
 app.use(session({
     resave: true,
     saveUninitialized: true,
     secret: global.config.keyJWT,
     cookie: { maxAge: 24 * 60 * 60 * 1000 }
 }));
+const multer = require('multer')
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '/public/uploads'))
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + file.originalname
+        cb(null, uniqueSuffix)
+    }
+})
 
+const upload = multer({ storage: storage })
 var server = http.createServer(app);
 
 //config update file
@@ -125,6 +137,33 @@ app.all('/api/:act', [middleware.verifyToken, middleware.checkadmin], async func
     }
     response.send(dataReponse)
 });
+app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.single('single'), async function (request, response) {
+    let dataReponse;
+
+    try {
+        const file = request.file
+        if (!file) {
+            return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
+        }
+        let body = request.body;
+        let url = 'http://157.230.27.124:2021/uploads/';
+        if (!body.id) {
+            return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
+        }
+
+        let controller = require('./app/admin/build/controller');
+        let query = {
+            id: body.id,
+            file: url + file.filename
+        }
+        dataReponse = await controller['uploadfile'](query);
+    } catch (sys) {
+        console.log(sys)
+        dataReponse = { status: false, msg: "error", code: 700, data: sys };
+    }
+    response.send(dataReponse)
+});
+
 app.get('/craw', async (req, res) => {
     for (let i = 1; i <= 47; i++) {
         let code;

@@ -1,34 +1,45 @@
 const model = require('./model');
 
-exports.add = async function(query){
+exports.add = async function (query) {
     let validate = await val.Form(query, {
-        list:'required'
-     });
+        list: 'required'
+    });
 
-     if (!validate.status) {
-        return {status: false, msg: validate.error, code: 707, data: []};
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
     }
     return await model.add(query);
 }
-exports.update = async function(query){
+exports.update = async function (query) {
     let validate = await val.Form(query, {
-        data:'required',
-        id:'required'
-     });
+        data: 'required',
+        id: 'required'
+    });
 
-     if (!validate.status) {
-        return {status: false, msg: validate.error, code: 707, data: []};
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
     }
     return await model.update(query);
 }
-exports.delete = async function (query){
+exports.delete = async function (query) {
     let validate = await val.Form(query, {
-        list:'required'
-     });
+        list: 'required'
+    });
 
-     if (!validate.status) {
-        return {status: false, msg: validate.error, code: 707, data: []};
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
     }
     return await model.delete(query);
+}
+
+exports.uploadfile = async function (query) {
+    let validate = await val.Form(query, {
+        id: 'required'
+    });
+
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
+    }
+    return await model.uploadfile(query);
 }
 

@@ -31,3 +31,15 @@ exports.update = async function (query) {
         data: []
     };
 }
+
+
+exports.uploadfile = async function (query) {
+    await buildRes.uploadfile(query.id, query.file)
+    return {
+
+        status: true,
+        msg: "success",
+        code: 0,
+        data: []
+    };
+}
