@@ -156,7 +156,13 @@ app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.s
             id: body.id,
             file: url + file.filename
         }
-        dataReponse = await controller['uploadfile'](query);
+
+        dataReponse = {
+            status: true,
+            msg: "success",
+            code: 0,
+            data: url + file.filename
+        }
     } catch (sys) {
         console.log(sys)
         dataReponse = { status: false, msg: "error", code: 700, data: sys };

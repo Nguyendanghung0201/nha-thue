@@ -12,12 +12,12 @@ exports.delete = async function (query) {
 
 
 exports.add = async function (query) {
-    await buildRes.insert_build(query.list)
+   let detail= await buildRes.insert_build(query.list)
     return {
         status: true,
         msg: "success",
         code: 0,
-        data: []
+        data: detail
     };
 }
 
@@ -34,9 +34,8 @@ exports.update = async function (query) {
 
 
 exports.uploadfile = async function (query) {
-    await buildRes.uploadfile(query.id, query.file)
+    // await buildRes.uploadfile(query.id, query.file)
     return {
-
         status: true,
         msg: "success",
         code: 0,
