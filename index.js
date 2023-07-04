@@ -482,6 +482,9 @@ async function abcd(id) {
     // await global.db('building').insert(arr)
 
 }
+app.get('/admin/*', async (req, res) => {
+    res.render('admin')
+})
 app.get('*', async (req, res) => {
     res.render('index')
 })
