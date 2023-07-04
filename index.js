@@ -482,10 +482,18 @@ async function abcd(id) {
     // await global.db('building').insert(arr)
 
 }
-app.get('/admin/*', async (req, res) => {
+app.get('/testthuad', async (req, res) => {
+   
+    res.json({
+        ad: "ok"
+    })
+})
+app.get('/quanly', async (req, res) => {
+    console.log('admin')
     res.render('admin')
 })
-app.get('*', async (req, res) => {
+app.get('/', async (req, res) => {
+    console.log('clinent')
     res.render('index')
 })
 
