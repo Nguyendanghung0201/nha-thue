@@ -145,17 +145,7 @@ app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.s
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
-        let body = request.body;
         let url = 'http://157.230.27.124:2021/uploads/';
-        if (!body.id) {
-            return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
-        }
-
-        let controller = require('./app/admin/build/controller');
-        let query = {
-            id: body.id,
-            file: url + file.filename
-        }
 
         dataReponse = {
             status: true,
