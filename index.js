@@ -488,7 +488,7 @@ app.get('/testthuad', async (req, res) => {
         ad: "ok"
     })
 })
-app.get('/quanly', async (req, res) => {
+app.get('/quanly',middleware.checkadmin, async (req, res) => {
     console.log('admin')
     res.render('admin')
 })
