@@ -54,14 +54,6 @@ class build_repository {
 
     async delete(uid) {
         return await db(this.db).delete().whereIn(this.column.id, uid)
-
-    }
-
-    async uploadfile(uid, url) {
-        return await db(this.db).update({
-            images: url
-        }).where('id', uid)
-
     }
 
 }

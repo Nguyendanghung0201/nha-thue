@@ -39,3 +39,9 @@ exports.list_town = async (query) => {
 
   return await model.list_town(query)
 }
+
+exports.province = async (query) => {
+
+  return await model.province(query)
+
+}

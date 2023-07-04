@@ -37,4 +37,14 @@ exports.list_along = async(query)=>{
         data: result
     };
 }
+exports.province = async(query)=>{
+    let result = await repLocation.province(query.param.id)
+    return {
+        status: true,
+        msg: "success",
+        code: 0,
+        data: result
+    };
+}
+
 
