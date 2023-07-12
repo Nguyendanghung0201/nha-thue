@@ -60,7 +60,7 @@ app.use(function (req, res, next) {
 const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
-const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=en&api-version=3.0&includeSentenceLength=true'
+const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=vi&api-version=3.0&includeSentenceLength=true'
 app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
 
     let dataReponse = null;
@@ -223,7 +223,7 @@ app.post('/getdetail', async (req, res) => {
             'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
             "origin": 'https://www.realnetpro.com',
-            "referer": "https://www.realnetpro.com/room_detail.php?id=5682631&type=room"
+            "referer":url
         }
     })
     if (html.data) {
