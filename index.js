@@ -62,20 +62,16 @@ const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=vi&api-version=3.0&includeSentenceLength=true'
-app.all('/client/:act', async function (request, response) {
+app.all('/client/:act', [middleware.verifyToken, middleware.checkadmin], async function (request, response) {
 
     let dataReponse = null;
     let dataError = null;
     try {
-        let abc = request.method === 'POST' || request.method === 'PUT'
-            ? (request.body.mod ? request.body.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '')
-            : request.query.mod ? request.query.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '';
-
 
         let act = request.params.act.replace(/[^a-z0-9\_\-]/i, '').toLowerCase();
-        let mod = (abc) ? abc : request.query.mod;
+        let mod = (request.mod) ? request.mod : request.query.mod;
         let nameRole = request.body.userInfo ? request.body.userInfo.level : '';
-     
+
         let authMethod = global.authMethod.check_function(request.method, act, mod, nameRole);
         /** @namespace request.files */
 

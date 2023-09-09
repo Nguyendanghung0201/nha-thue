@@ -1,4 +1,4 @@
 const model = require('./model')
-exports.list= async()=>{
+exports.list_khuyenmai= async()=>{
     return model.list()
 }
