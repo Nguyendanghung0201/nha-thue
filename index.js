@@ -25,7 +25,8 @@ app.use(session({
     secret: global.config.keyJWT,
     cookie: { maxAge: 24 * 60 * 60 * 1000 }
 }));
-const multer = require('multer')
+const multer = require('multer');
+const { cookie } = require('request-promise');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, '/public/uploads'))
@@ -61,7 +62,7 @@ const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=vi&api-version=3.0&includeSentenceLength=true'
-app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
+app.all('/client/:act', async function (request, response) {
 
     let dataReponse = null;
     let dataError = null;
@@ -223,7 +224,7 @@ app.post('/getdetail', async (req, res) => {
             'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
             "origin": 'https://www.realnetpro.com',
-            "referer":url
+            "referer": url
         }
     })
     if (html.data) {
@@ -314,7 +315,116 @@ app.post('/getdetail', async (req, res) => {
     }
 
 })
+app.post('/getlist_home', async (req, res) => {
+    let { cookie, page_min, page_max } = req.body;
+    try {
+          
+        for (let i = page_min; i <= page_max; i++) {
+            let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
+                headers: {
+                    "cookie": cookie,
+                    'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
+                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
+                    "origin": 'https://www.realnetpro.com'
+                }
+            });
 
+            if (f.data) {
+                check = f.data
+                let $ = cheerio.load(f.data, { decodeEntities: false, xmlMode: true, lowerCaseTags: true });
+                let list = $('.main_contents .one_building')
+                if (list) {
+                    check = $('div').hasClass('.main_contents')
+                    for (let element of list) {
+                        let name = $(element).find('.building_info .building_name').text()
+                        let images = $(element).find('img.building_photo').attr('src')
+                        let data = $(element).find('.building_info > div:nth-child(2)').text().trim()
+                        let phone = $(element).find('.building_company').text()
+                        let address = ''
+                        let line = ''
+                        let pdf = $(element).find('.building_data a').attr('href')
+                        if (data && data.length > 5) {
+                            let index = data.search('沿')
+                            if (index != -1) {
+                                address = data.slice(3, index)
+                                line = data.slice(index + 3, data.length)
+                            }
+
+
+                        }
+                        let rooms = $(element).find('.room_info_tr')
+                        let arr_rooms = []
+                        if (rooms) {
+                            for (let el of rooms) {
+                                let id = $(el).find('.browsing_date').attr('id')
+                                let yeucau = $(el).find('td .specify_n').text()
+                                let layout = $(el).find('td .room_layout_image').attr('src')
+                                let st_td = $(el).find('td.st_td').text()
+                                let date = $(el).find('td:nth-child(6)').text()
+                                let dientich = $(el).find('td:nth-child(7)').text()
+                                let tien = $(el).find('td:nth-child(8)').text()
+                                let key_money = $(el).find('td:nth-child(9)').text()
+                                let datcoc = $(el).find('td:nth-child(10)').text()
+                                let qc = $(el).find('td:nth-child(11)').text()
+                                let infor_rooms = {
+                                    id: id ? id.trim() : "",
+                                    yeucau: yeucau ? yeucau.trim() : "",
+                                    layout: layout ? layout.trim() : "",
+                                    st_td: st_td ? st_td.trim() : "",
+                                    date: date ? date.trim() : "",
+                                    dientich: dientich ? dientich.trim() : "",
+                                    tien: tien ? tien.trim() : "",
+                                    key_money: key_money ? key_money.trim() : "",
+                                    datcoc: datcoc ? datcoc.trim() : "",
+                                    qc: qc ? qc.trim() : ""
+                                }
+                                arr_rooms.push(infor_rooms)
+                            }
+                        }
+                        let real_id = "";
+                        if (pdf) {
+                            real_id = pdf.slice(pdf.search('id=') + 3, pdf.length)
+                        }
+                        let el = {
+                            name: name ? name.trim() : '',
+                            real_id: real_id,
+                            address: address ? address.trim() : '',
+                            line: line ? line.trim() : '',
+                            infor: '',
+                            phone: phone ? phone.trim() : '',
+                            images: images ?? '',
+                            province_id: code,
+                            city_id: 'new',
+                            town_id: 'new',
+                            data: data,
+                            pdf: pdf ?? '',
+                            room: JSON.stringify(arr_rooms)
+                        }
+                        arr.push(el)
+                    }
+                } else {
+                    check = $('div').hasClass('.main_contents')
+                    break;
+
+                }
+            } else {
+                check = false
+                break;
+
+            }
+            await global.db('building').insert(arr)
+            console.log(i, arr.length)
+            arr = []
+            await delay(5000)
+        }
+  
+    } catch (e) {
+        console.log('loi ', e)
+    }
+    console.log('end')
+
+
+})
 
 async function abcd(id) {
     let arr = []
@@ -332,7 +442,7 @@ async function abcd(id) {
             for (let i = 0; i <= 4; i++) {
                 let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
                     headers: {
-                        "cookie": `certification_key=1693e1328a04c29973ba89eb946e73e0; _ga=GA1.1.148854057.1678875280; term20210802=13bc365d918820c75acefc62d4ed7c2f; term20210802d=1678875330; open_room=five; page_type=building; PHPSESSID=88j654kh15cp7do92roncnaae4; certification_key=d381d632513ba0cffbea8fbfee1caebc; page_method=estate; transportation_id=-1; update_date=-1; rental_cost1=-1; rental_cost2=-1; structured_date=-1; second_floor_more_flag=-1; mybox_mode=insert; setting_number=1; ini_pref=${code}; ini_pref_name=%E7%A6%8F%E5%B3%B6; square_meter_l=-1; square_meter_h=-1; pref_code=${code}; gr=03AKH6MRHjjra8ridswtLESZleP889IQSbGaKZH2RYI5rLRNYSPTXTmzNqq81wuBRm2j67Np6-OTVguF2EWeMFlmwpS8LY3-0Lt5kms4eh1ThXnu5YBUzF5QXjtGc1FcFTg4fXBgDY8j2DKEKrk8QPpTDHEnr7WqSYANsZ8sC-XvLlBFZ1SPikOyntebRC_8rBEZs9k9PRP0Op42BKKprKkHfYjhPwp6-sPcY9-gouYAz2IKLjZtLhIchGcTWGP2Y2HthzPuMYAW1_vFlpF51cY-IdDdLFr0X88m_YFuOnHVWolUZ9VpmdCVWtMgosBbm2_L6SfqMpfTwnfoYylMghj6N-PKNrXEi6s6_d-0Ji81gKz7Q-U8Fb71E5IhU3SgiocGBnrujzIpE3IQE3N_4fMNRD075fafvQk1hZqb0M9dPpR8vEG2-BVU3Y01sIWnzGpH8ZEra7UfnabeCKvU4MVCESK6lfkquiyidSTwyqh7F5ByJ-mP1D1IRbiIa1wZl4exV-HnZhJgMqPL6_QmHlmqWgO1jzeCcdpJWM7NYsruf-uNLRLTA5OJh-AszAgNM6skNgwMxjwuZA; _ga_9FXQTNH0JJ=GS1.1.1679361330.21.1.1679361628.0.0.0`,
+                        "cookie": cookie,
                         'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Microsoft Edge";v="110"',
                         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69',
                         "origin": 'https://www.realnetpro.com'

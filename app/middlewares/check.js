@@ -63,8 +63,9 @@ exports.verifyToken = async function (req, res, next) {
         } catch (e) {
             return res.status(200).send({ status: false, msg: 'error', code: 702, data: [] });
         }
-        if (authData) {
+        if (authData && authData.dataMain && authData.dataMain.Id) {
             status = true;
+
             req.uid = authData.dataMain.Id;
         }
         if (status === true) {
