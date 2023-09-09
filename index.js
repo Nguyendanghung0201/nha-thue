@@ -67,9 +67,15 @@ app.all('/client/:act', async function (request, response) {
     let dataReponse = null;
     let dataError = null;
     try {
+        let abc = request.method === 'POST' || request.method === 'PUT'
+            ? (request.body.mod ? request.body.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '')
+            : request.query.mod ? request.query.mod.replace(/[^a-z0-9\_\-]/i, '').toLowerCase() : '';
+
+
         let act = request.params.act.replace(/[^a-z0-9\_\-]/i, '').toLowerCase();
-        let mod = (request.mod) ? request.mod : request.query.mod;
+        let mod = (abc) ? abc : request.query.mod;
         let nameRole = request.body.userInfo ? request.body.userInfo.level : '';
+     
         let authMethod = global.authMethod.check_function(request.method, act, mod, nameRole);
         /** @namespace request.files */
 
@@ -318,7 +324,7 @@ app.post('/getdetail', async (req, res) => {
 app.post('/getlist_home', async (req, res) => {
     let { cookie, page_min, page_max } = req.body;
     try {
-          
+
         for (let i = page_min; i <= page_max; i++) {
             let f = await axios.get('https://www.realnetpro.com/main.php?method=estate&display=building&page=' + i, {
                 headers: {
@@ -417,7 +423,7 @@ app.post('/getlist_home', async (req, res) => {
             arr = []
             await delay(5000)
         }
-  
+
     } catch (e) {
         console.log('loi ', e)
     }
