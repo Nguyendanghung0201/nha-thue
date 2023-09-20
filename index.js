@@ -130,7 +130,6 @@ app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.s
 
 
 app.get('*', async (req, res) => {
-  
     res.render('index')
 })
 
