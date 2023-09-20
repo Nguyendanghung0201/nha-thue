@@ -1,49 +1,468 @@
-<!DOCTYPE html>
-<html lang="en">
+<div class="one_building">
+    <div class="building_tr">
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <img class="building_photo"
+                            src="https://file.realnetpro.com/photo/0003947/building/large/b0001044040169462411301.jpg">
+                    </td>
+                    <td class="building_info">
+                        <div class="building_name">
+                            エミュール5 <input type="hidden" class="room_cnt" value="3">
+                        </div>
+                        <div>
+                            住所：東大阪市上四条町<br>
+                            沿線：近鉄奈良線「瓢箪山」徒歩23分
+                        </div>
+                        <!--div>
+                        お問合せ先：サンプル不動産 ◯◯◯◯◯◯店
+                    </div-->
+                    </td>
+                    <td class="building_company">
+                        お問合せ先<br>
+                        住友林業レジデンシャル株式会社 大阪支店<br>
+                        Tel :06-6243-3174 <span class="any_tel" style="display: none;">(問合せ先が異なる部屋があります)</span>
+                    </td>
+                    <td class="building_data" style="top: 0px;">
+                        <a href="/common/building_sheet.php?id=1044040">
+                            <img class="building_data_dl" src="./img/dl_icon.png">
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="room_tr">
+        <table class="room_info_table">
+            <tbody>
+                <tr class="midashi_r">
+                    <td>
+                        部屋名<br>
+                        更新日
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        問合せ<br>
+                        指定
+                    </td>
+                    <td>
+                        図面
+                    </td>
+                    <td>
+                        状態
+                    </td>
+                    <td>
+                        入居可能日<br>
+                        内覧可能日
+                    </td>
+                    <td>
+                        間取
+                    </td>
+                    <td>
+                        賃料<br>
+                        管理費・共益費
+                    </td>
+                    <td>
+                        敷金<br>
+                        礼金
+                    </td>
+                    <td>
+                        保証金<br>
+                        償却・敷引
+                    </td>
+                    <td style="display: none;">
+                        AD
+                    </td>
+                    <!--td>
+                    備考
+                </td-->
+                    <td style="display: none;">
+                        印刷用PDF
+                    </td>
+                    <td style="display: none;">
+                        メール添付
+                    </td>
+                    <td style="display: none;">
+                        mybox
+                    </td>
+                    <td style="display: table-cell;">
+                        機能<!--br />
+                    選択-->
+                    </td>
+                    <td style="display: none;">
+                        詳細
+                    </td>
+                </tr>
+                <tr class="room_info_tr">
+                    <td class="history_bg">
+                        <a onclick="go_detail(event,'5772382','room')" href="" target="_blank"
+                            class="room_number">105</a><br>
+                        <span>2分前</span>
+                        <br>
+                        <!--閲覧履歴-->
+                        <div>
+                            <span class="browsing_date" id="browsing_5772382"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <!--家具付の判定-->
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+                        <!--家電付の判定-->
 
-<body>
+                    </td>
+                    <td class="specify_td">
+                        <span class="specify"><span class="specify_n">無</span></span>
+                    </td>
+                    <td>
+                        <img class="room_layout_image"
+                            src="https://file.realnetpro.com/photo/0003947/layout/room/l00057723821694624201.jpg">
+                    </td>
+                    <td class="st_td">
+                        <span class="st type1">空室</span>
 
-</body>
-<div id="map" style="height: 400px; width: 100%;"></div>
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaHZ6LVyzZAhnBKHCrb7PcTjBcUttqIeY&callback=initMap">
-    </script>
+                        <!--span class="st type1">空室</span><br />
+                    <span class="st type2">退去予定</span><br />
+                    <span class="st type3">清掃中</span><br />
+                    <span class="st type4">内装中</span><br />
+                    <span class="st type5">審査中</span><br />
+                    <span class="st type6">商談中</span>
+                    <span class="st type7">新築</span>
+                    <span class="st type8">建築中</span-->
+                    </td>
+                    <td>
+                        相談<br>
+                        ------ </td>
+                    <td>
+                        1LDK<br>
+                        40.59㎡
+                    </td>
+                    <td class="text_right">
+                        <span>55,000円<br>
+                            4,000円</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            1ヶ月</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            なし</span>
+                    </td>
+                    <td class="text_right" style="display: none;">
+                        <span>100％<br>
+                        </span>
+                    </td>
+                    <!--td>
+                    <span class="all_display_on">備考</span>
+                </td-->
+                    <td style="display: none;">
+                        <a href="/common/factsheet.php?id=5772382&amp;org=1" class="print"><span
+                                class="hover_comment">印刷用PDF</span><img src="./img/print_icon.png"></a><br>
+                        <div class="print_type_select">
+                            ▼出力タイプ
+                            <div class="print_type_box">
+                                <a href="/common/factsheet.php?id=5772382&amp;org=1" class="one_print_type">
+                                    客付け＋元付け物件資料(2枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=5772382&amp;org=2" class="one_print_type">
+                                    元付け物件資料(1枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=5772382" class="one_print_type">
+                                    客付け物件資料(1枚)
+                                </a>
+                                <div class="print_cancel">
+                                    キャンセル
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="display: none;">
+                        <span class="mail_button " id="mail_5772382"><span class="hover_comment">メール添付</span><img
+                                src="./img/mail_icon.png"></span>
+                    </td>
+                    <td style="display: none;">
+                        <span class="add_mybox_button " id="5772382"><img src="./img/mybox_add_icon.png"><span
+                                class="hover_comment">mybox追加</span><input type="hidden" name="mybox_mode"
+                                value="insert"></span>
+                    </td>
+                    <td style="display: table-cell;">
+                        <span id="type_room" class="room_system_menu" title="5772382,エミュール5,105">機能</span>
+                        <!--br />
+                    <input type="checkbox" /-->
+                    </td>
+                    <td style="display: none;">
+                        <a class="go_detail" onclick="go_detail(event,'5772382','room')" href="" target="_blank"><span
+                                class="hover_comment">詳細</span><img src="./img/detail_icon.png"></a>
+                    </td>
+                </tr>
+                <tr class="room_info_detail">
+                    <td colspan="15">
+                        <div class="all_display">
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="room_info_tr">
+                    <td class="history_bg">
+                        <a onclick="go_detail(event,'6568696','room')" href="" target="_blank"
+                            class="room_number">103</a><br>
+                        <span>2分前</span>
+                        <br>
+                        <!--閲覧履歴-->
+                        <div>
+                            <span class="browsing_date" id="browsing_6568696"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <!--家具付の判定-->
 
-<script>
-    function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: 37.7749, lng: -122.4194 },
-            zoom: 8
-        });
+                        <!--家電付の判定-->
 
+                    </td>
+                    <td class="specify_td">
+                        <span class="specify"><span class="specify_n">無</span></span>
+                    </td>
+                    <td>
+                        <img class="room_layout_image"
+                            src="https://file.realnetpro.com/photo/0003947/layout/room/l00065686961688057523.jpg">
+                    </td>
+                    <td class="st_td">
+                        <span class="st type2">退去予定</span>
 
-        var image = new google.maps.MarkerImage(
-            'https://file.realnetpro.com/photo/0031102/building/large/b0001138824167758076501.jpg',
-            new google.maps.Size(32, 32),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(16, 32),
-            new google.maps.Size(32, 32)
-        );
+                        <!--span class="st type1">空室</span><br />
+                    <span class="st type2">退去予定</span><br />
+                    <span class="st type3">清掃中</span><br />
+                    <span class="st type4">内装中</span><br />
+                    <span class="st type5">審査中</span><br />
+                    <span class="st type6">商談中</span>
+                    <span class="st type7">新築</span>
+                    <span class="st type8">建築中</span-->
+                    </td>
+                    <td>
+                        相談<br>
+                        ------ </td>
+                    <td>
+                        1LDK<br>
+                        41.9㎡
+                    </td>
+                    <td class="text_right">
+                        <span>55,000円<br>
+                            4,000円</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            1ヶ月</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            なし</span>
+                    </td>
+                    <td class="text_right" style="display: none;">
+                        <span>100％<br>
+                        </span>
+                    </td>
+                    <!--td>
+                    <span class="all_display_on">備考</span>
+                </td-->
+                    <td style="display: none;">
+                        <a href="/common/factsheet.php?id=6568696&amp;org=1" class="print"><span class="hover_comment"
+                                style="display: none;">印刷用PDF</span><img src="./img/print_icon.png"></a><br>
+                        <div class="print_type_select">
+                            ▼出力タイプ
+                            <div class="print_type_box">
+                                <a href="/common/factsheet.php?id=6568696&amp;org=1" class="one_print_type">
+                                    客付け＋元付け物件資料(2枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=6568696&amp;org=2" class="one_print_type">
+                                    元付け物件資料(1枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=6568696" class="one_print_type">
+                                    客付け物件資料(1枚)
+                                </a>
+                                <div class="print_cancel">
+                                    キャンセル
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="display: none;">
+                        <span class="mail_button " id="mail_6568696"><span class="hover_comment">メール添付</span><img
+                                src="./img/mail_icon.png"></span>
+                    </td>
+                    <td style="display: none;">
+                        <span class="add_mybox_button " id="6568696"><img src="./img/mybox_add_icon.png"><span
+                                class="hover_comment">mybox追加</span><input type="hidden" name="mybox_mode"
+                                value="insert"></span>
+                    </td>
+                    <td style="display: table-cell;">
+                        <span id="type_room" class="room_system_menu" title="6568696,エミュール5,103">機能</span>
+                        <!--br />
+                    <input type="checkbox" /-->
+                    </td>
+                    <td style="display: none;">
+                        <a class="go_detail" onclick="go_detail(event,'6568696','room')" href="" target="_blank"><span
+                                class="hover_comment">詳細</span><img src="./img/detail_icon.png"></a>
+                    </td>
+                </tr>
+                <tr class="room_info_detail">
+                    <td colspan="15">
+                        <div class="all_display">
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="room_info_tr">
+                    <td class="history_bg">
+                        <a onclick="go_detail(event,'6586780','room')" href="" target="_blank"
+                            class="room_number">205</a><br>
+                        <span>2分前</span>
+                        <br>
+                        <!--閲覧履歴-->
+                        <div>
+                            <span class="browsing_date" id="browsing_6586780"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <!--家具付の判定-->
 
-        var marker2 = new google.maps.Marker({
-            position: { lat: 37.7749, lng: -122.4194 },
-            map: map,
-            icon: image
-        });
-        new google.maps.Marker({
-            position: { lat: 36.7749, lng: -122.4194 },
-            map: map,
-            icon: image
-        });
-    }
-    initMap()
-</script>
+                        <!--家電付の判定-->
 
-</html>
+                    </td>
+                    <td class="specify_td">
+                        <span class="specify"><span class="specify_n">無</span></span>
+                    </td>
+                    <td>
+                        <img class="room_layout_image"
+                            src="https://file.realnetpro.com/photo/0003947/layout/room/l00065867801694624113.jpg">
+                    </td>
+                    <td class="st_td">
+                        <span class="st type1">空室</span>
+
+                        <!--span class="st type1">空室</span><br />
+                    <span class="st type2">退去予定</span><br />
+                    <span class="st type3">清掃中</span><br />
+                    <span class="st type4">内装中</span><br />
+                    <span class="st type5">審査中</span><br />
+                    <span class="st type6">商談中</span>
+                    <span class="st type7">新築</span>
+                    <span class="st type8">建築中</span-->
+                    </td>
+                    <td>
+                        相談<br>
+                        ------ </td>
+                    <td>
+                        2DK<br>
+                        46.03㎡
+                    </td>
+                    <td class="text_right">
+                        <span>57,000円<br>
+                            4,000円</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            1ヶ月</span>
+                    </td>
+                    <td class="text_right">
+                        <span>なし<br>
+                            なし</span>
+                    </td>
+                    <td class="text_right" style="display: none;">
+                        <span>100％<br>
+                        </span>
+                    </td>
+                    <!--td>
+                    <span class="all_display_on">備考</span>
+                </td-->
+                    <td style="display: none;">
+                        <a href="/common/factsheet.php?id=6586780&amp;org=1" class="print"><span
+                                class="hover_comment">印刷用PDF</span><img src="./img/print_icon.png"></a><br>
+                        <div class="print_type_select">
+                            ▼出力タイプ
+                            <div class="print_type_box">
+                                <a href="/common/factsheet.php?id=6586780&amp;org=1" class="one_print_type">
+                                    客付け＋元付け物件資料(2枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=6586780&amp;org=2" class="one_print_type">
+                                    元付け物件資料(1枚)
+                                </a>
+                                <a href="/common/factsheet.php?id=6586780" class="one_print_type">
+                                    客付け物件資料(1枚)
+                                </a>
+                                <div class="print_cancel">
+                                    キャンセル
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="display: none;">
+                        <span class="mail_button " id="mail_6586780"><span class="hover_comment">メール添付</span><img
+                                src="./img/mail_icon.png"></span>
+                    </td>
+                    <td style="display: none;">
+                        <span class="add_mybox_button " id="6586780"><img src="./img/mybox_add_icon.png"><span
+                                class="hover_comment">mybox追加</span><input type="hidden" name="mybox_mode"
+                                value="insert"></span>
+                    </td>
+                    <td style="display: table-cell;">
+                        <span id="type_room" class="room_system_menu" title="6586780,エミュール5,205">機能</span>
+                        <!--br />
+                    <input type="checkbox" /-->
+                    </td>
+                    <td style="display: none;">
+                        <a class="go_detail" onclick="go_detail(event,'6586780','room')" href="" target="_blank"><span
+                                class="hover_comment">詳細</span><img src="./img/detail_icon.png"></a>
+                    </td>
+                </tr>
+                <tr class="room_info_detail">
+                    <td colspan="15">
+                        <div class="all_display">
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                            aaaaaaaaaaaaaaaaaaaaaa<br>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="more_five_room" style="display: none;">
+                    <td colspan="15">
+                        <span class="hide_room_text">この建物にはあと<span class="hide_room_red"><span
+                                    class="building_room_num"></span>部屋</span>登録があります</span>　<span
+                            class="hide_room_open">表示する</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
