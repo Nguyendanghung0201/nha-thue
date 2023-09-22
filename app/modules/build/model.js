@@ -43,7 +43,7 @@ exports.list_building2 = async function (query) {
     const output = removeDuplicates(search);
 console.log(output)
     let result = await buildRes.list_building2(output,query.page);
-    console.log(result)
+  
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
     // let result2 = result.data.map(e => {
