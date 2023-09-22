@@ -53,16 +53,16 @@ class build_repository {
         return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
 
     }
-   // 'regexp', '.*a.*b.*c.*'
+   // 'regexp', '.*a.*b.*c.*'  .whereRaw('LOWER(noidung) REGEXP ?', '.*a.*b.*c.*')
     async list_building2(tukhoa,page){
         await db(this.db).select('*').where(function() {
-            this.where(db.raw('LOWER(name)'), 'regexp', tukhoa)
-              .orWhere(db.raw('LOWER(address)'), 'regexp', tukhoa)
-              .orWhere(db.raw('LOWER(line)'), 'regexp', tukhoa);
+            this.whereRaw('LOWER(address)  REGEXP ?', tukhoa)
+            //   .orWhere(db.raw('LOWER(address)'), 'regexp', tukhoa)
+            //   .orWhere(db.raw('LOWER(line)'), 'regexp', tukhoa);
             //   this.where(knex.raw('LOWER(noidung)'), 'like', `%${searchTerm.toLowerCase()}%`)
             //   .orWhere(knex.raw('LOWER(mieuta)'), 'like', `%${searchTerm.toLowerCase()}%`)
             //   .orWhere(knex.raw('LOWER(tukhoa)'), 'like', `%${searchTerm.toLowerCase()}%`);
-          }).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
+          }).paginate({ perPage: 20, isLengthAware: true, currentPage: page??1 })
     }
 
     async get_list_gan(city) {

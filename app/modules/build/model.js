@@ -28,8 +28,9 @@ exports.list_building2 = async function (query) {
     for(let i=0;i<search.length;i++){
         tukhoa =tukhoa+ ".*"+ search[i]
     }
- 
+ console.log(tukhoa)
     let result = await buildRes.list_building2(tukhoa,query.page);
+    console.log(result)
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
     // let result2 = result.data.map(e => {
