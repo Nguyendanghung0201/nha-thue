@@ -56,9 +56,9 @@ class build_repository {
    // 'regexp', '.*a.*b.*c.*'
     async list_building2(tukhoa,page){
         await db(this.db).select('*').where(function() {
-            this.where('LOWER(name)', 'regexp', tukhoa)
-              .orWhere('LOWER(address)', 'regexp', tukhoa)
-              .orWhere('LOWER(line)', 'regexp', tukhoa);
+            this.where(db.raw('LOWER(name)'), 'regexp', tukhoa)
+              .orWhere(db.raw('LOWER(address)'), 'regexp', tukhoa)
+              .orWhere(db.raw('LOWER(line)'), 'regexp', tukhoa);
             //   this.where(knex.raw('LOWER(noidung)'), 'like', `%${searchTerm.toLowerCase()}%`)
             //   .orWhere(knex.raw('LOWER(mieuta)'), 'like', `%${searchTerm.toLowerCase()}%`)
             //   .orWhere(knex.raw('LOWER(tukhoa)'), 'like', `%${searchTerm.toLowerCase()}%`);
