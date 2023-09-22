@@ -18,6 +18,7 @@ exports.list_building2 = async function (query) {
     if (!validate.status) {
         return { status: false, msg: validate.error, code: 707, data: [] };
     }
+    console.log('search ',query.search)
     return await model.list_building2(query);
 };
 

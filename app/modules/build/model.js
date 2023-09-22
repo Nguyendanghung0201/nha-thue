@@ -22,8 +22,14 @@ exports.list = async function (query) {
     };
 }
 exports.list_building2 = async function (query) {
-    
-    let result = await buildRes.list_building2(query.search,query.page);
+    let search = query.search.replaceAll(" ","")
+    //'.*a.*b.*c.*'
+    let tukhoa = ""
+    for(let i=0;i<search.length;i++){
+        tukhoa =tukhoa+ ".*"+ search[i]
+    }
+ 
+    let result = await buildRes.list_building2(tukhoa,query.page);
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
     // let result2 = result.data.map(e => {

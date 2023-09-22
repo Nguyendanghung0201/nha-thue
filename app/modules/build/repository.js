@@ -53,12 +53,15 @@ class build_repository {
         return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
 
     }
-
-    async list_building2(search,page){
+   // 'regexp', '.*a.*b.*c.*'
+    async list_building2(tukhoa,page){
         await db(this.db).select('*').where(function() {
-            this.where('name', 'like', search)
-              .orWhere('address', 'like', search)
-              .orWhere('line', 'like', search);
+            this.where('LOWER(name)', 'regexp', tukhoa)
+              .orWhere('LOWER(address)', 'regexp', tukhoa)
+              .orWhere('LOWER(line)', 'regexp', tukhoa);
+            //   this.where(knex.raw('LOWER(noidung)'), 'like', `%${searchTerm.toLowerCase()}%`)
+            //   .orWhere(knex.raw('LOWER(mieuta)'), 'like', `%${searchTerm.toLowerCase()}%`)
+            //   .orWhere(knex.raw('LOWER(tukhoa)'), 'like', `%${searchTerm.toLowerCase()}%`);
           }).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
 
