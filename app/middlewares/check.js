@@ -9,7 +9,7 @@ exports.check = async function (req, res, next) {
             next();
         }
     } else {
-        console.log('userInfo ',req.uid)
+     
         let userInfo = await URes.my_profile(req.uid);
         if (!userInfo) {
             return res.send({ status: false, msg: 'error', code: 654, data: [] });
@@ -56,7 +56,7 @@ exports.verifyToken = async function (req, res, next) {
             return next();
         } 
         let bearerToken = bearerHeader.split(' ')[1];
-        console.log('bearerToken ',bearerToken)
+
         let status = false;
         // let done = false;
         let authData = null;
@@ -65,7 +65,7 @@ exports.verifyToken = async function (req, res, next) {
         } catch (e) {
             return res.status(200).send({ status: false, msg: 'error', code: 702, data: [] });
         }
-        console.log('berr ',authData)
+
         if (authData && authData.dataMain && authData.dataMain.Id) {
             status = true;
 
