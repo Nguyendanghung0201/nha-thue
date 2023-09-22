@@ -9,6 +9,17 @@ exports.list = async function (query) {
     }
     return await model.list(query);
 };
+exports.list_building2 = async function (query) {
+    let validate = await val.Form(query, {
+        page: 'required',
+        type:'required',
+        search:'required',
+    });
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
+    }
+    return await model.list_building2(query);
+};
 
 exports.list_nha_gan = async function (query) {
     let validate = await val.Form(query, {
@@ -21,7 +32,7 @@ exports.list_nha_gan = async function (query) {
 };
 
 exports.list_ga = async function(query){
-    console.log(query)
+   
     let validate = await val.Form(query.param, {
         page: 'required',
         ga:'required',

@@ -54,6 +54,14 @@ class build_repository {
 
     }
 
+    async list_building2(search,page){
+        await db(this.db).select('*').where(function() {
+            this.where('name', 'like', search)
+              .orWhere('address', 'like', search)
+              .orWhere('line', 'like', search);
+          }).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
+    }
+
     async get_list_gan(city) {
         return await db(this.db).select('*').where('status', 1).andWhere('city_id', city)
             .orderByRaw('RAND()').limit(15)

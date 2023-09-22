@@ -75,6 +75,8 @@
   ],
   "ignore": [
     "list_khuyenmai",
+    "list_building2",
+    "detail",
     "login",
     "register",
     "list_contry",

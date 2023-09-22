@@ -2,8 +2,28 @@ const buildRes = require("./repository");
 
 
 exports.list = async function (query) {
-
+    
     let result = await buildRes.get_list(query);
+    // let list = await buildRes.getMybuild(query.userInfo.Id);
+    // let list2 = list.map(e => e.buiding_id)
+    // let result2 = result.data.map(e => {
+    //     if (list2.includes(e.id)) {
+    //         e.mybuild = true;
+    //     } else {
+    //         e.mybuild = false;
+    //     }
+    //     return e
+    // })
+    return {
+        status: true,
+        msg: "success",
+        code: 0,
+        data: result
+    };
+}
+exports.list_building2 = async function (query) {
+    
+    let result = await buildRes.list_building2(query.search,query.page);
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
     // let result2 = result.data.map(e => {
