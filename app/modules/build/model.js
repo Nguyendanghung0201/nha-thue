@@ -21,14 +21,32 @@ exports.list = async function (query) {
         data: result
     };
 }
+function removeDuplicates(inputString) {
+    const charSet = new Set();
+    let result = '';
+  
+    for (const char of inputString) {
+      if (!charSet.has(char)) {
+        charSet.add(char);
+        result += char;
+      }
+    }
+  
+    return result;
+  }
+  
+ 
 exports.list_building2 = async function (query) {
     let search = query.search.replaceAll(" ","")
     //'.*a.*b.*c.*'
+
+    const output = removeDuplicates(search);
     let tukhoa = ""
-    for(let i=0;i<search.length;i++){
-        tukhoa =tukhoa+ ".*"+ search[i]
+    for(let i=0;i<output.length;i++){
+        tukhoa =tukhoa+ ".*"+ output[i]
     }
  console.log(tukhoa)
+ tukhoa =tukhoa+ ".*"
     let result = await buildRes.list_building2(tukhoa,query.page);
     console.log(result)
     // let list = await buildRes.getMybuild(query.userInfo.Id);
