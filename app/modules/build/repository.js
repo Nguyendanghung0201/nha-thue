@@ -53,23 +53,25 @@ class build_repository {
         return await db(this.db).select('*').where('status', 1).paginate({ perPage: 20, isLengthAware: true, currentPage: query.page })
 
     }
-   // 'regexp', '.*a.*b.*c.*'  .whereRaw('LOWER(noidung) REGEXP ?', '.*a.*b.*c.*')
-    async list_building2(tukhoa,page){
-   //    return await db(this.db).select('*').whereRaw('LOWER(address)  REGEXP ?', tukhoa).paginate({ perPage: 20, isLengthAware: true, currentPage: page??1 })
-   console.log(db(this.db).select('id','address')
-   .where(function() {
-    for (const keyword of tukhoa) {
-      this.andWhere(db.raw('LOWER(address)'), 'like', `%${keyword}%`);
-    }
-    })
-   .paginate({ perPage: 20, isLengthAware: true, currentPage: page??1 }).toString())
-   return await db(this.db).select('*')
-   .where(function() {
-    for (const keyword of tukhoa) {
-      this.andWhere(db.raw('LOWER(address)'), 'like', `%${keyword}%`);
-    }
-    })
-   .paginate({ perPage: 20, isLengthAware: true, currentPage: page??1 })
+
+    async list_building2(tukhoa, page, type) {
+        if(type=='station'){
+            return await db(this.db).select('*')
+            .where(function () {
+                for (const keyword of tukhoa) {
+                    this.andWhere(db.raw('LOWER(line)'), 'like', `%${keyword}%`);
+                }
+            })
+            .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
+        }
+
+        return await db(this.db).select('*')
+            .where(function () {
+                for (const keyword of tukhoa) {
+                    this.andWhere(db.raw('LOWER(address)'), 'like', `%${keyword}%`);
+                }
+            })
+            .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
 
     }
 

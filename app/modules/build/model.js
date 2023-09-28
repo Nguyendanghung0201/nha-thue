@@ -2,7 +2,7 @@ const buildRes = require("./repository");
 
 
 exports.list = async function (query) {
-    
+
     let result = await buildRes.get_list(query);
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
@@ -24,26 +24,31 @@ exports.list = async function (query) {
 function removeDuplicates(inputString) {
     const charSet = new Set();
     let result = '';
-  
+
     for (const char of inputString) {
-      if (!charSet.has(char)) {
-        charSet.add(char);
-        result += char;
-      }
+        if (!charSet.has(char)) {
+            charSet.add(char);
+            result += char;
+        }
     }
-  
+
     return result;
-  }
-  
- 
+}
+
+
 exports.list_building2 = async function (query) {
-    let search = query.search.replaceAll(" ","")
+    let search = query.search.replaceAll(" ", "")
     //'.*a.*b.*c.*'
 
     const output = removeDuplicates(search);
-console.log(output)
-    let result = await buildRes.list_building2(output,query.page);
-  
+    if (output.length > 10) {
+        output = output.replace('a', '').replace('i', '')
+    }
+    if(output.length>15){
+        output=output.slice(0,15)
+    }
+    let result = await buildRes.list_building2(output, query.page,query.type);
+
     // let list = await buildRes.getMybuild(query.userInfo.Id);
     // let list2 = list.map(e => e.buiding_id)
     // let result2 = result.data.map(e => {
@@ -98,14 +103,14 @@ exports.list_ga = async function (query) {
 }
 exports.detail = async function (query) {
     let result = await buildRes.detail(query.param.id);
-    // let check = await buildRes.check(query.userInfo.Id, query.param.id);
-    // if (result) {
-    //     if (check) {
-    //         result.mybuild = true
-    //     } else {
-    //         result.mybuild = false
-    //     }
-    // }
+    let check = await buildRes.check(query.userInfo.Id, query.param.id);
+    if (result) {
+        if (check) {
+            result.mybuild = true
+        } else {
+            result.mybuild = false
+        }
+    }
     // let city = result.city_id;
     // let list_nha_gan = []
     // if (city) {
