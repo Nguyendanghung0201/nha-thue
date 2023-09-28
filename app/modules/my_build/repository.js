@@ -17,7 +17,7 @@ class my_build_repository {
 
     async getList(user_id, page) {
         return await db('my_build')
-            .leftJoin('building2', 'my_build.buiding_id', 'building2.detail_id')
+            .innerJoin('building2', 'my_build.buiding_id', 'building2.detail_id')
             .select('building2.*', 'my_build.id as build_id').where('my_build.user_id', user_id)
             .orderBy('build_id', 'desc').paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
