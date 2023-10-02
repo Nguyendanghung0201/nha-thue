@@ -9,9 +9,10 @@ exports.check = async function (req, res, next) {
             next();
         }
     } else {
+        
      
         let userInfo = await URes.my_profile(req.uid);
-        if (!userInfo) {
+        if (!userInfo || !userInfo.Id) {
             return res.send({ status: false, msg: 'error', code: 654, data: [] });
         }
         if (userInfo && userInfo.status === 0) {

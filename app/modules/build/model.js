@@ -103,14 +103,14 @@ exports.list_ga = async function (query) {
 }
 exports.detail = async function (query) {
     let result = await buildRes.detail(query.param.id);
-    let check = await buildRes.check(query.userInfo.Id, query.param.id);
-    if (result) {
-        if (check) {
-            result.mybuild = true
-        } else {
-            result.mybuild = false
-        }
-    }
+    // let check = await buildRes.check(query.userInfo.Id, query.param.id);
+    // if (result) {
+    //     if (check) {
+    //         result.mybuild = true
+    //     } else {
+    //         result.mybuild = false
+    //     }
+    // }
     // let city = result.city_id;
     // let list_nha_gan = []
     // if (city) {
