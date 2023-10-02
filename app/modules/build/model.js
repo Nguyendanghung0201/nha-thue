@@ -103,7 +103,7 @@ exports.list_ga = async function (query) {
 }
 exports.detail = async function (query) {
     let result = await buildRes.detail(query.param.id);
-    let check = await buildRes.check(query.userInfo.id, query.param.id);
+    let check = await buildRes.check(query.userInfo.Id, query.param.id);
     if (result) {
         if (check) {
             result.mybuild = true
