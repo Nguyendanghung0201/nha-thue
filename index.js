@@ -37,7 +37,10 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix)
     }
 })
-
+let online = {
+    value: 124,
+    time: new Date().getTime()
+}
 const upload = multer({ storage: storage })
 var server = http.createServer(app);
 
@@ -125,6 +128,23 @@ app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.s
     }
     response.send(dataReponse)
 });
+app.get('/online-curent', async (req, res) => {
+    let current_time = new Date().getTime()
+    if (current_time - online.time > 600000) {
+        const min = -50;
+        const max = 100;
+        online = {
+            value: 200 + Math.floor(Math.random() * (max - min + 1)) + min,
+            time: new Date().getTime()
+        }
+    }
+    res.json({
+        data: online.value,
+        status: true,
+        msg: "success",
+        code: 0,
+    })
+})
 
 
 app.get('*', async (req, res) => {
