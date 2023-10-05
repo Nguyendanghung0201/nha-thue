@@ -146,7 +146,26 @@ app.get('/online-curent', async (req, res) => {
     })
 })
 
+app.post('/add-contact', async (req, res) => {
+    let data_input = req.body
+    let validate = await val.Form(data_input, {
+        fullname: 'required',
+        email: 'required',
+        phone: 'required',
+        data: 'required',
+    });
+    if (!validate.status) {
+        return res.json({ status: false, msg: validate.error, code: 707, data: [] });
+    }
 
+    await db('inforcustom').insert(data_input)
+    res.json({
+        status: true,
+        msg: "success",
+        code: 0, data: []
+    })
+
+})
 app.get('*', async (req, res) => {
     res.render('index')
 })
