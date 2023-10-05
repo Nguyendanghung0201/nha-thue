@@ -84,7 +84,7 @@ exports.verifyToken = async function (req, res, next) {
             return res.json({
                 status: false,
                 data: [],
-                msg: 'error', code: 664
+                msg: 'error', code: 690
             });
         }
     }
