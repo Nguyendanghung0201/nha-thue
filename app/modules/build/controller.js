@@ -53,3 +53,18 @@ exports.detail = async function (query) {
     }
     return await model.detail(query);
 };
+exports.list_map = async function (query) {
+    let validate = await val.Form(query, {
+        lat: 'required',
+        lng:'required',
+        lat2: 'required',
+        lng2:'required',
+        zoom:'required',
+    });
+    if (!validate.status) {
+        return { status: false, msg: validate.error, code: 707, data: [] };
+    }
+    return await model.list_map(query);
+}
+
+

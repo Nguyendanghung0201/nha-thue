@@ -99,6 +99,22 @@ class build_repository {
             .orWhereIn('nha_ga_build.nha_ga_id', id_ga).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
 
+    async list_map_random(lat,lng,lat2,lng2){
+        return await db(this.db).select('*').where('status', 1)
+        .andWhere('lat_map','>', lat)
+        .andWhere('lat_map','<', lat2)
+        .andWhere('long_map','>', lng)
+        .andWhere('long_map','<', lng2)
+        .orderByRaw('RAND()').limit(15) 
+    }
+    async list_map(lat,lng,lat2,lng2){
+        return await db(this.db).select('*').where('status', 1)
+        .andWhere('lat_map','>', lat)
+        .andWhere('lat_map','<', lat2)
+        .andWhere('long_map','>', lng)
+        .andWhere('long_map','<', lng2)
+    }
+
 
 }
 

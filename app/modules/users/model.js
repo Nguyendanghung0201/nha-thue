@@ -101,7 +101,7 @@ exports.register = async (query) => {
             }
         };
     } catch (ex) {
-        console.log(ex)
+      
         if (result[0]) {
             await URep.delete(result[0]);
         }

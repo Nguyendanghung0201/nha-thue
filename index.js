@@ -107,14 +107,12 @@ app.all('/client/:act', [middleware.verifyToken, middleware.checkadmin], async f
 
 app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.single('single'), async function (request, response) {
     let dataReponse;
-
     try {
         const file = request.file
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
         let url = 'http://157.230.27.124:2021/uploads/';
-
         dataReponse = {
             status: true,
             msg: "success",
