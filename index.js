@@ -66,7 +66,7 @@ const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=vi&api-version=3.0&includeSentenceLength=true'
-app.all('/client/:act', [middleware.verifyToken, middleware.checkadmin], async function (request, response) {
+app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
 
     let dataReponse = null;
     let dataError = null;
