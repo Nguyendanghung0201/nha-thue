@@ -135,7 +135,7 @@ app.get('/online-curent', async (req, res) => {
         const max = 100;
         online = {
             value: 200 + Math.floor(Math.random() * (max - min + 1)) + min,
-            time: new Date().getTime()
+            time: current_time
         }
     }
     res.json({
