@@ -105,7 +105,7 @@ class build_repository {
         .andWhere('lat_map','<', lat2)
         .andWhere('long_map','>', lng)
         .andWhere('long_map','<', lng2)
-        .orderByRaw('RAND()').limit(15) 
+       .limit(15) 
     }
     async list_map(lat,lng,lat2,lng2){
         return await db(this.db).select('*').where('status', 1)
