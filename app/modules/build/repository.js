@@ -59,7 +59,7 @@ class build_repository {
             return await db(this.db).select('*')
             .where(function () {
                 for (const keyword of tukhoa) {
-                    this.andWhere(db.raw('LOWER(line)'), 'like', `%${keyword}%`);
+                    this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
                 }
             })
             .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
@@ -68,7 +68,7 @@ class build_repository {
         return await db(this.db).select('*')
             .where(function () {
                 for (const keyword of tukhoa) {
-                    this.andWhere(db.raw('LOWER(address)'), 'like', `%${keyword}%`);
+                    this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
                 }
             })
             .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
