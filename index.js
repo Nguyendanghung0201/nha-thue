@@ -114,33 +114,33 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
     let dataReponse;
     try {
         const file = request.file
-     
+
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
         let new_update = {
-           url : file.filename
+            url: file.filename
 
         }
-        if(request.body.type  =='en'){
+        if (request.body.type == 'en') {
             const exp4 = JSON.stringify(new_update, null, 4);
             fs.writeFileSync(`./public/output/banneren.json`, exp4)
         }
-        if(request.body.type  =='jp'){
+        if (request.body.type == 'jp') {
             const exp4 = JSON.stringify(new_update, null, 4);
             fs.writeFileSync(`./public/output/bannerjp.json`, exp4)
         }
-        if(request.body.type  =='vi'){
+        if (request.body.type == 'vi') {
             console.log('âj')
             const exp4 = JSON.stringify(new_update, null, 4);
             fs.writeFileSync(`./public/output/bannervi.json`, exp4)
         }
-       
-         dataReponse = {
+
+        dataReponse = {
             status: true,
             msg: "success",
             code: 0,
-            data:  file.filename
+            data: file.filename
         }
     } catch (sys) {
         console.log(sys)
@@ -148,6 +148,23 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
     }
     response.send(dataReponse)
 });
+app.get('/banner/:id', async (req, res) => {
+    let id = req.params.id
+    let rawData = fs.readFileSync(`./public/output/bannervi.json`);
+
+    if (id == 'en') {
+        rawData = fs.readFileSync(`./public/output/banneren.json`);
+    }
+    if (id == 'jp') {
+        rawData = fs.readFileSync(`./public/output/bannerjp.json`);
+    }
+    const data_last_update = JSON.parse(rawData);
+    res.json({
+        status: true,
+        code: 0,
+        data: data_last_update
+    })
+})
 app.get('/online-curent', async (req, res) => {
     let current_time = new Date().getTime()
     if (current_time - online.time > 600000) {
