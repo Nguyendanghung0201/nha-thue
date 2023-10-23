@@ -109,7 +109,7 @@ app.all('/client/:act', [middleware.verifyToken, middleware.check], async functi
     response.send(dataReponse)
 });
 
-app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.single('single'), async function (request, response) {
+app.post('/apiupload', upload.single('single'), async function (request, response) {
     let dataReponse;
     try {
         const file = request.file
