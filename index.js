@@ -113,7 +113,7 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
     let dataReponse;
     try {
         const file = request.file
-       console.log(request.body)
+     
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
@@ -123,15 +123,16 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
         }
         if(request.body.type  =='en'){
             const exp4 = JSON.stringify(new_update, null, 4);
-            fs.writeFileSync(`./output/banneren.json`, exp4)
+            fs.writeFileSync(`./public/output/banneren.json`, exp4)
         }
         if(request.body.type  =='jp'){
             const exp4 = JSON.stringify(new_update, null, 4);
-            fs.writeFileSync(`./output/bannerjp.json`, exp4)
+            fs.writeFileSync(`./public/output/bannerjp.json`, exp4)
         }
         if(request.body.type  =='vi'){
+            console.log('âj')
             const exp4 = JSON.stringify(new_update, null, 4);
-            fs.writeFileSync(`./output/bannervi.json`, exp4)
+            fs.writeFileSync(`./public/output/bannervi.json`, exp4)
         }
        
          dataReponse = {
