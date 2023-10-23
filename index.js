@@ -12,6 +12,7 @@ const device = require('express-device');
 const requestIp = require('request-ip');
 const session = require('express-session');
 require('./app/cors/global');
+const fs = require('fs')
 var cheerio = require("cheerio");
 app.use(timeout(5 * 60 * 1000));
 app.use(bodyParser.json({ type: 'application/json' }));
@@ -115,12 +116,28 @@ app.post('/apiupload', [middleware.verifyToken, middleware.checkadmin], upload.s
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
-        let url = 'http://157.230.27.124:2021/uploads/';
-        dataReponse = {
+        let new_update = {
+           url : file.filename
+
+        }
+        if(request.body.type  =='en'){
+            const exp4 = JSON.stringify(new_update, null, 4);
+            fs.writeFileSync(`./output/banneren.json`, exp4)
+        }
+        if(request.body.type  =='jp'){
+            const exp4 = JSON.stringify(new_update, null, 4);
+            fs.writeFileSync(`./output/bannerjp.json`, exp4)
+        }
+        if(request.body.type  =='vi'){
+            const exp4 = JSON.stringify(new_update, null, 4);
+            fs.writeFileSync(`./output/bannervi.json`, exp4)
+        }
+       
+         dataReponse = {
             status: true,
             msg: "success",
             code: 0,
-            data: url + file.filename
+            data:  file.filename
         }
     } catch (sys) {
         console.log(sys)
@@ -169,9 +186,6 @@ app.post('/add-contact', async (req, res) => {
 app.get('*', async (req, res) => {
     res.render('index')
 })
-
-
-
 
 server.listen(config.SPort, function () {
     console.log("API Init Completed in Port " + config.SPort);
