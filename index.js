@@ -12,7 +12,7 @@ const device = require('express-device');
 const requestIp = require('request-ip');
 const session = require('express-session');
 require('./app/cors/global');
-const fs = require('fs')
+
 var cheerio = require("cheerio");
 app.use(timeout(5 * 60 * 1000));
 app.use(bodyParser.json({ type: 'application/json' }));
