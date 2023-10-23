@@ -52,7 +52,6 @@ app.use(cors(global.config.cors));
 app.use(device.capture());
 //get IP device
 app.use(requestIp.mw());
-app.use(express.static(__dirname + '/public'));
 
 app.use(function (err, req, res, next) {
     return res.send({ status: false, msg: "error", code: 700, data: err });
@@ -67,6 +66,8 @@ const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 const url_dich = 'https://api-edge.cognitive.microsofttranslator.com/translate?from=ja&to=vi&api-version=3.0&includeSentenceLength=true'
+app.use(express.static(__dirname + '/public'));
+
 app.all('/client/:act', [middleware.verifyToken, middleware.check], async function (request, response) {
 
     let dataReponse = null;
