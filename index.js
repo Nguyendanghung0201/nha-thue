@@ -113,7 +113,7 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
     let dataReponse;
     try {
         const file = request.file
-        console.log(request)
+       console.log(request.body)
         if (!file) {
             return dataReponse = { status: false, msg: "error", code: 700, data: 'sys' };
         }
