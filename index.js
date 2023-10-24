@@ -131,7 +131,7 @@ app.post('/apiupload', upload.single('single'), async function (request, respons
             fs.writeFileSync(`./public/output/bannerjp.json`, exp4)
         }
         if (request.body.type == 'vi') {
-            console.log('âj')
+           
             const exp4 = JSON.stringify(new_update, null, 4);
             fs.writeFileSync(`./public/output/bannervi.json`, exp4)
         }
