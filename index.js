@@ -113,7 +113,7 @@ app.post('/api/upload', upload.single('file'), [middleware.verifyToken, middlewa
 
     if (req.file  && req.body.userInfo) {
            let avt = req.file.filename
-           await db("users").upload('avatar',avt).where('Id',req.body.userInfo.Id)
+           await db("users").update('avatar',avt).where('Id',req.body.userInfo.Id)
    
         res.json({
             status: true, msg: "success", code: 0, data: file.filename
