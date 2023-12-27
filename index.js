@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, '/public/uploads'))
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + file.originalname
+        const uniqueSuffix = Date.now() + '-'  + path.extname(file.originalname)
         cb(null, uniqueSuffix)
     }
 })
