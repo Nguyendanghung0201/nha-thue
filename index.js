@@ -109,7 +109,22 @@ app.all('/client/:act', [middleware.verifyToken, middleware.check], async functi
     }
     response.send(dataReponse)
 });
+app.post('/api/upload', upload.single('file'), [middleware.verifyToken, middleware.check], async (req, res) => {
 
+    if (req.file  && req.body.userInfo) {
+           let avt = req.file.filename
+           await db("users").upload('avatar',avt).where('Id',req.body.userInfo.Id)
+   
+        res.json({
+            status: true, msg: "success", code: 0, data: file.filename
+        })
+    } else {
+        res.json({
+            status: false, msg: "error", code: 400, data: []
+        })
+    }
+
+})
 app.post('/apiupload', upload.single('single'), async function (request, response) {
     let dataReponse;
     try {
