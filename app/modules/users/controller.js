@@ -13,6 +13,8 @@ exports.login = async function (query) {
 exports.logout = async function (query) {
     return await model.logout(query);
 };
+
+
 exports.register = async function (query) {
     let rules =  {
         display_name: "required|maxLength:255",

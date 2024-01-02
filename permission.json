@@ -26,6 +26,9 @@
       "khuyenmai": {
         "list_khuyenmai": "all",
         "list_admin": "1,2"
+      },
+      "hoahong": {
+        "list": "all"
       }
     },
     "post": {
@@ -39,8 +42,8 @@
         "delete": "1,2",
         "list_ga": "all",
         "update": "1,2",
-        "list_building2":"all",
-        "list_map":"all"
+        "list_building2": "all",
+        "list_map": "all"
       },
       "my_build": {
         "add": "all",
