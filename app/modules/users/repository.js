@@ -43,6 +43,10 @@ class user_repository {
     }
     async getlist(ref) {
         return await db(this.db).select('id', 'display_name','phone', 'gender', 'created_at').where('your_ref', ref)
+       
+    }
+    async getlist_hh(email){
+        return await db('hoahong').select("*").where('user_nhanhh_id',email)
     }
 
     async check_phone(phone) {

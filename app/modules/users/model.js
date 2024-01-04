@@ -16,11 +16,13 @@ exports.logout = async function (query) {
 };
 exports.list = async function (query) {
     let list = await URep.getlist(query.userInfo.ref)
+    let list_hh = await URep.getlist_hh(query.userInfo.email)
     return {
         status: true,
         msg: "success",
         code: 0,
-        data: list
+        data: list,
+        hh :list_hh
     }
 };
 
