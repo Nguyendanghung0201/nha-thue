@@ -82,6 +82,7 @@ exports.register = async (query) => {
             password: md5(query.password),
             phone: query.phone,
             ref: ref,
+            birthday:query.birthday,
             created_at: format.date(),
             status: 1,
             level: 0,
