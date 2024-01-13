@@ -15,6 +15,7 @@ class user_repository {
             level: "level",
             created_at: "created_at",
             updated_at: "updated_at",
+            birthday:"birthday",
             phone: "phone",
             avatar: "avatar",
             find_raw: "find_raw"
