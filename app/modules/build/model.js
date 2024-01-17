@@ -124,13 +124,38 @@ exports.detail = async function (query) {
         // list_nha_gan: list_nha_gan
     };
 }
+exports.check_detail = async function (query) {
+    // let result = await buildRes.detail(query.param.id);
+    let check = await buildRes.check(query.userInfo.Id, query.param.id);
+    // if (result) {
+    //     if (check) {
+    //         result.mybuild = true
+    //     } else {
+    //         result.mybuild = false
+    //     }
+    // }
+    // let city = result.city_id;
+    // let list_nha_gan = []
+    // if (city) {
+    //     list_nha_gan = await buildRes.get_list_gan(city)
+    // }
+
+    return {
+        status: true,
+        msg: "success",
+        code: 0,
+        data: check,
+        // list_nha_gan: list_nha_gan
+    };
+}
+
 exports.list_map = async function (query) {
     let result
-    if(query.zoom >11){
+    // if(query.zoom >11){
          result = await buildRes.list_map(query.lat,query.lng,query.lat2,query.lng2);
-    }else{
-         result = await buildRes.list_map_random(query.lat,query.lng,query.lat2,query.lng2);
-    }
+    // }else{
+    //      result = await buildRes.list_map_random(query.lat,query.lng,query.lat2,query.lng2);
+    // }
   
     // let check = await buildRes.check(query.userInfo.Id, query.param.id);
     // if (result) {
