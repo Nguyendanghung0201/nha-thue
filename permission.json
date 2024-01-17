@@ -9,7 +9,8 @@
       "build": {
         "list": "all",
         "detail": "all",
-        "list_ga": "all"
+        "list_ga": "all",
+        "check_detail":"all"
       },
       "location": {
         "list_province": "all",
