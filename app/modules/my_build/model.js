@@ -21,7 +21,9 @@ exports.add = async function (query) {
     }
 }
 exports.delete = async function (query) {
+  
     let result = await repLocation.delete(query.userInfo.Id, query.id)
+   
     return {
         status: true,
         msg: "success",

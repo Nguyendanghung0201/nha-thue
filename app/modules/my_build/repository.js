@@ -22,7 +22,7 @@ class my_build_repository {
             .orderBy('build_id', 'desc').paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
     async delete(user_id, id) {
-        return await db('my_build').where('user_id', user_id).andWhere('buiding_id', id).del()
+        return await db('my_build').where('user_id', user_id).andWhere('id', id).del()
     }
 
 
