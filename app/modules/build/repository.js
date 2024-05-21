@@ -81,7 +81,8 @@ class build_repository {
     }
 
     async getMybuild(user_id) {
-        return await db('my_build').select('buiding_id').where('my_build.user_id', user_id)
+        return await db('my_build').innerJoin('building2', 'my_build.buiding_id', 'building2.detail_id').select('buiding_id').where('my_build.user_id', user_id)
+   
     }
 
     async delete(uid) {
