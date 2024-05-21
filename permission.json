@@ -32,6 +32,7 @@
         "list": "all"
       }
     },
+  
     "post": {
       "users": {
         "login": "all",
@@ -81,7 +82,7 @@
   ],
   "ignore": [
     "list_khuyenmai",
-    "list_building2",
+  
     "detail",
     "login",
     "register",
