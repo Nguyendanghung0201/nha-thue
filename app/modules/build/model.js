@@ -44,21 +44,21 @@ exports.list_building2 = async function (query) {
     if (output.length > 10) {
         output = output.replace('a', '').replace('i', '')
     }
-    if(output.length>15){
-        output=output.slice(0,15)
+    if (output.length > 15) {
+        output = output.slice(0, 15)
     }
-    let result = await buildRes.list_building2(output, query.page,query.type);
+    let result = await buildRes.list_building2(output, query.page, query.type);
 
-    // let list = await buildRes.getMybuild(query.userInfo.Id);
-    // let list2 = list.map(e => e.buiding_id)
-    // let result2 = result.data.map(e => {
-    //     if (list2.includes(e.id)) {
-    //         e.mybuild = true;
-    //     } else {
-    //         e.mybuild = false;
-    //     }
-    //     return e
-    // })
+    let list = await buildRes.getMybuild(query.userInfo.Id);
+    let list2 = list.map(e => e.buiding_id)
+    result.data = result.data.map(e => {
+        if (list2.includes(e.id)) {
+            e.mybuild = true;
+        } else {
+            e.mybuild = false;
+        }
+        return e
+    })
     return {
         status: true,
         msg: "success",
@@ -152,11 +152,11 @@ exports.check_detail = async function (query) {
 exports.list_map = async function (query) {
     let result
     // if(query.zoom >11){
-         result = await buildRes.list_map(query.lat,query.lng,query.lat2,query.lng2);
+    result = await buildRes.list_map(query.lat, query.lng, query.lat2, query.lng2);
     // }else{
     //      result = await buildRes.list_map_random(query.lat,query.lng,query.lat2,query.lng2);
     // }
-  
+
     // let check = await buildRes.check(query.userInfo.Id, query.param.id);
     // if (result) {
     //     if (check) {
