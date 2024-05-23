@@ -40,7 +40,7 @@ exports.list_building2 = async function (query) {
     let search = query.search.replaceAll(" ", "")
     //'.*a.*b.*c.*'
 
-    const output = removeDuplicates(search);
+    let output = removeDuplicates(search);
     if (output.length > 10) {
         output = output.replace('a', '').replace('i', '')
     }
