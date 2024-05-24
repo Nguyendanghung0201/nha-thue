@@ -129,7 +129,7 @@ class build_repository {
         //    .limit(15) 
     }
     async list_map(lat, lng, lat2, lng2) {
-        return await db(this.db).select('*').where('status', 1)
+        return await db(this.db).select('id','images','address','name','gia_thong','detail_id','price','lat_map','long_map').where('status', 1)
             .andWhere('lat_map', '>', lat)
             .andWhere('lat_map', '<', lat2)
             .andWhere('long_map', '>', lng)
