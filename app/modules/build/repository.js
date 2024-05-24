@@ -128,12 +128,22 @@ class build_repository {
             .andWhere('long_map', '<', lng2)
         //    .limit(15) 
     }
-    async list_map(lat, lng, lat2, lng2) {
-        return await db(this.db).select('id','images','address','name','gia_thong','detail_id','price','lat_map','long_map' ,'search_key').where('status', 1)
+    async list_map(lat, lng, lat2, lng2,tukhoa) {
+        if(tukhoa){
+            return await db(this.db).select('id','images','address','name','gia_thong','detail_id','price','lat_map','long_map' ,'search_key').where('status', 1)
             .andWhere('lat_map', '>', lat)
             .andWhere('lat_map', '<', lat2)
             .andWhere('long_map', '>', lng)
             .andWhere('long_map', '<', lng2)
+            .andWhere('search_key', 'like', '%' + tukhoa + '%')
+        }else{
+            return await db(this.db).select('id','images','address','name','gia_thong','detail_id','price','lat_map','long_map' ,'search_key').where('status', 1)
+            .andWhere('lat_map', '>', lat)
+            .andWhere('lat_map', '<', lat2)
+            .andWhere('long_map', '>', lng)
+            .andWhere('long_map', '<', lng2)
+        }
+      
     }
 
 

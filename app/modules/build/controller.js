@@ -69,6 +69,7 @@ exports.list_map = async function (query) {
         lat2: 'required',
         lng2:'required',
         zoom:'required',
+   
     });
     if (!validate.status) {
         return { status: false, msg: validate.error, code: 707, data: [] };

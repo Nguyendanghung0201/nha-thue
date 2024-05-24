@@ -153,8 +153,10 @@ exports.check_detail = async function (query) {
 
 exports.list_map = async function (query) {
     let result
+    let tukhoa = query.search;
+
     // if(query.zoom >11){
-    result = await buildRes.list_map(query.lat, query.lng, query.lat2, query.lng2);
+    result = await buildRes.list_map(query.lat, query.lng, query.lat2, query.lng2,tukhoa);
     // }else{
     //      result = await buildRes.list_map_random(query.lat,query.lng,query.lat2,query.lng2);
     // }
