@@ -47,10 +47,11 @@ exports.list_building2 = async function (query) {
     if (output.length > 15) {
         output = output.slice(0, 15)
     }
-    let result = await buildRes.list_building2(output, query.page, query.type);
+    console.log('query.search ',query.search)
+    let result = await buildRes.list_building3(query.search, query.page, query.type);
    
     let list = await buildRes.getMybuild(query.userInfo.Id);
-    console.log(list)
+   
     let list2 = list.map(e => e.buiding_id)
     result.data = result.data.map(e => {
         if (list2.includes(e.detail_id)) {

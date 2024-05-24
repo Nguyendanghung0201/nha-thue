@@ -55,14 +55,14 @@ class build_repository {
     }
 
     async list_building2(tukhoa, page, type) {
-        if(type=='station'){
+        if (type == 'station') {
             return await db(this.db).select('*')
-            .where(function () {
-                for (const keyword of tukhoa) {
-                    this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
-                }
-            })
-            .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
+                .where(function () {
+                    for (const keyword of tukhoa) {
+                        this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
+                    }
+                })
+                .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
         }
 
         return await db(this.db).select('*')
@@ -75,6 +75,26 @@ class build_repository {
 
     }
 
+    async list_building3(tukhoa, page, type) {
+        // if(type=='station'){
+        //     return await db(this.db).select('*')
+        //     .where(function () {
+        //         for (const keyword of tukhoa) {
+        //             this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
+        //         }
+        //     })
+        //     .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
+        // }
+
+        return await db(this.db).select('*').where('search_key', 'like', '%' + tukhoa + '%')
+            // .where(function () {
+            //     for (const keyword of tukhoa) {
+            //         this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
+            //     }
+            // })
+            .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
+
+    }
     async get_list_gan(city) {
         return await db(this.db).select('*').where('status', 1).andWhere('city_id', city)
             .orderByRaw('RAND()').limit(15)
@@ -82,7 +102,7 @@ class build_repository {
 
     async getMybuild(user_id) {
         return await db('my_build').innerJoin('building2', 'my_build.buiding_id', 'building2.detail_id').select('buiding_id').where('my_build.user_id', user_id)
-   
+
     }
 
     async delete(uid) {
@@ -100,20 +120,20 @@ class build_repository {
             .orWhereIn('nha_ga_build.nha_ga_id', id_ga).paginate({ perPage: 20, isLengthAware: true, currentPage: page })
     }
 
-    async list_map_random(lat,lng,lat2,lng2){
+    async list_map_random(lat, lng, lat2, lng2) {
         return await db(this.db).select('*').where('status', 1)
-        .andWhere('lat_map','>', lat)
-        .andWhere('lat_map','<', lat2)
-        .andWhere('long_map','>', lng)
-        .andWhere('long_map','<', lng2)
-    //    .limit(15) 
+            .andWhere('lat_map', '>', lat)
+            .andWhere('lat_map', '<', lat2)
+            .andWhere('long_map', '>', lng)
+            .andWhere('long_map', '<', lng2)
+        //    .limit(15) 
     }
-    async list_map(lat,lng,lat2,lng2){
+    async list_map(lat, lng, lat2, lng2) {
         return await db(this.db).select('*').where('status', 1)
-        .andWhere('lat_map','>', lat)
-        .andWhere('lat_map','<', lat2)
-        .andWhere('long_map','>', lng)
-        .andWhere('long_map','<', lng2)
+            .andWhere('lat_map', '>', lat)
+            .andWhere('lat_map', '<', lat2)
+            .andWhere('long_map', '>', lng)
+            .andWhere('long_map', '<', lng2)
     }
 
 
