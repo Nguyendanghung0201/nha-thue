@@ -47,11 +47,11 @@ exports.list_building2 = async function (query) {
     if (output.length > 15) {
         output = output.slice(0, 15)
     }
-    console.log('query.search ',query.search)
+    console.log('query.search ', query.search)
     let result = await buildRes.list_building3(query.search, query.page, query.type);
-   
+
     let list = await buildRes.getMybuild(query.userInfo.Id);
-   
+
     let list2 = list.map(e => e.buiding_id)
     result.data = result.data.map(e => {
         if (list2.includes(e.detail_id)) {
@@ -154,9 +154,14 @@ exports.check_detail = async function (query) {
 exports.list_map = async function (query) {
     let result
     let tukhoa = query.search;
-    
+
     // if(query.zoom >11){
-    result = await buildRes.list_map(query.lat, query.lng, query.lat2, query.lng2,tukhoa);
+    if (query.zoom == 6 ||query.zoom == 7) {
+        result = await buildRes.list_map_zoom_6();
+    } else {
+        result = await buildRes.list_map(query.lat + 1, query.lng + 1, query.lat2 + 1, query.lng2 + 1, tukhoa);
+    }
+
     // }else{
     //      result = await buildRes.list_map_random(query.lat,query.lng,query.lat2,query.lng2);
     // }
