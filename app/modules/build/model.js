@@ -159,7 +159,7 @@ exports.list_map = async function (query) {
     if (query.zoom == 6 ||query.zoom == 7) {
         result = await buildRes.list_map_zoom_6();
     } else {
-        result = await buildRes.list_map(query.lat - 1, query.lng - 1, query.lat2 + 1, query.lng2 + 1, tukhoa);
+        result = await buildRes.list_map(query.lat - 2, query.lng - 2, query.lat2 + 2, query.lng2 + 2, tukhoa);
     }
 
     // }else{
