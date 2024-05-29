@@ -134,10 +134,10 @@ class build_repository {
     async list_map(lat, lng, lat2, lng2, tukhoa) {
         if (tukhoa) {
             return await db(this.db).select('id', 'images', 'address', 'name', 'gia_thong', 'detail_id', 'price', 'lat_map', 'long_map', 'search_key').where('status', 1)
-                .andWhere('lat_map', '>', lat)
-                .andWhere('lat_map', '<', lat2)
-                .andWhere('long_map', '>', lng)
-                .andWhere('long_map', '<', lng2)
+                .andWhere('lat_map', '>', lat) // min lat
+                .andWhere('lat_map', '<', lat2) // max lat
+                .andWhere('long_map', '>', lng) // min long map
+                .andWhere('long_map', '<', lng2) // max long map
                 .andWhere('search_key', 'like', '%' + tukhoa + '%')
         } else {
             return await db(this.db).select('id', 'images', 'address', 'name', 'gia_thong', 'detail_id', 'price', 'lat_map', 'long_map', 'search_key').where('status', 1)
