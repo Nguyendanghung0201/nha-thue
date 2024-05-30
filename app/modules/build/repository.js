@@ -129,7 +129,7 @@ class build_repository {
         //    .limit(15) 
     }
     async list_map_zoom_6() {
-        return await db(this.db).select('id', 'images', 'address', 'name', 'gia_thong', 'detail_id', 'price', 'lat_map', 'long_map', 'search_key').where('status', 1)
+        return await db(this.db).select('id', 'images', 'address', 'name', 'gia_thong', 'detail_id', 'price', 'lat_map', 'long_map', 'search_key','area').where('status', 1)
     }
     async list_map(lat, lng, lat2, lng2, tukhoa) {
         if (tukhoa) {
