@@ -22,7 +22,7 @@ exports.register = async function (query) {
         password: "required",
         re_password: "required|same:password",
         phone: "required|numeric|maxLength:20",
-        gender: "required|in:0,1",
+        gender: "required|in:0,1,2",
         birthday:"required"
     };
     let validate = await val.Form(query, rules);
