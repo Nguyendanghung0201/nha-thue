@@ -62,6 +62,8 @@ app.use(function (req, res, next) {
     res.locals.token = req.session.token;
     next();
 });
+// http://2401:c080:3800:2df9:5400:04ff:fef4:ee60:2021/
+//http://localhost:3000/checkinfor
 const delay = (ms) =>
     new Promise((resolve) => setTimeout(() => resolve(), ms));
 
