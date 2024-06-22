@@ -50,16 +50,13 @@ class user_repository {
         return await db('hoahong').select("*").where('user_nhanhh_id',email)
     }
 
-    async check_phone(phone) {
-        let select = this._create_select_care([this.column.phone]);
-        return await db(this.db).select(select).where(this.column.phone, phone).first();
-    }
+ 
 
     async check_email(email) {
         return await db(this.db).where(this.column.email, email).first();
     }
     async check_phone(phone) {
-        return await db(this.db).where(this.column.email, email).first();
+        return await db(this.db).where(this.column.phone, phone).first();
     }
     async my_profile(uid) {
         let select = this._create_select_ignore([]);

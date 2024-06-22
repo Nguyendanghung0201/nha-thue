@@ -69,10 +69,14 @@ exports.register = async (query) => {
     try {
         //check email
         let checkUsername = await URep.check_email(query.username);
+      
         if (checkUsername) {
             return { status: false, msg: "error", code: 660, data: [] };
         }
-
+        let checkUsername3 = await URep.check_phone(query.phone);
+        if (checkUsername3) {
+            return { status: false, msg: "error", code: 661, data: [] };
+        }
         let ref = format.randoms({
             length: 8,
             charset: 'numeric'
