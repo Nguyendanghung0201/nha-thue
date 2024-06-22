@@ -16,6 +16,7 @@ exports.logout = async function (query) {
 };
 exports.list = async function (query) {
     let list = await URep.getlist(query.userInfo.ref)
+  //  let list_ref=  await URep.getlist_ref(query.userInfo.ref)
     let list_hh = await URep.getlist_hh(query.userInfo.email)
     return {
         status: true,
