@@ -1285,9 +1285,22 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         dead_cards = []
         load_dead_cards()
         bobaichon()
-        let id_thong_tin = document.getElementById("thong_tin_hand");
+        let straight_flush = document.getElementById('straight_flush');
+        let four_of_a_kind = document.getElementById('four_of_a_kind');
+        let full_house = document.getElementById('full_house');
+        let flush = document.getElementById('flush');
+        let straight = document.getElementById('straight');
+        let three_of_a_kind = document.getElementById('three_of_a_kind')
+      
+        straight_flush.innerHTML = 0 + '%'
+        four_of_a_kind.innerHTML = 0 + '%'
+        full_house.innerHTML = 0 + '%'
+        flush.innerHTML = 0 + '%'
+        straight.innerHTML = 0 + '%'
+        three_of_a_kind.innerHTML = 0 + '%';
+        // let id_thong_tin = document.getElementById("thong_tin_hand");
 
-        id_thong_tin.classList.add('hide');
+        // id_thong_tin.classList.add('hide');
 
     }
     function load_dead_cards() {
