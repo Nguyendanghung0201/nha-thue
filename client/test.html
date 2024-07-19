@@ -663,10 +663,10 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 
 <script>
-   if(Telegram){
-    Telegram.WebApp.ready();
-   }
-   
+    if (window.Telegram) {
+        Telegram.WebApp.ready();
+    }
+
     // Optionally expand to full height
     const user = Telegram?.WebApp?.initDataUnsafe?.user;
 
@@ -1116,7 +1116,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
             your_card: arr_bai.filter(e => e && e.value),
             dead_card: dead_cards.filter(e => e && e.value)
         }
-        fetch('https://samuraichintai.com/poker/tinhtoan/flop', { 
+        fetch('https://samuraichintai.com/poker/tinhtoan/flop', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -1126,7 +1126,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
             .then(result => {
 
                 if (result && result.status && result.data && result.data.player && result.data.player.odd) {
-                  
+
                     let straight_flush = document.getElementById('straight_flush');
                     let four_of_a_kind = document.getElementById('four_of_a_kind');
                     let full_house = document.getElementById('full_house');
@@ -1294,7 +1294,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         let flush = document.getElementById('flush');
         let straight = document.getElementById('straight');
         let three_of_a_kind = document.getElementById('three_of_a_kind')
-      
+
         straight_flush.innerHTML = 0 + '%'
         four_of_a_kind.innerHTML = 0 + '%'
         full_house.innerHTML = 0 + '%'
