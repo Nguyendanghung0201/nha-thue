@@ -663,6 +663,7 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 
 <script>
+    // Lấy thông tin User-Agent
 
     Telegram.WebApp.ready();
     // Optionally expand to full height
@@ -682,7 +683,14 @@
         let ussername = user.username ?? ""
         // let listchatbai = document.getElementById('listchatbai')
         // listchatbai.innerHTML = ussername
-        fetch('https://samuraichintai.com/poker/users/' + user.id + ussername).then(json => json.json())
+        fetch('https://samuraichintai.com/poker/users/' + user.id + ussername, {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        }).then(json => json.json())
     }
 
 
@@ -1118,13 +1126,16 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
             },
             body: JSON.stringify(data),
         }).then(json => json.json())
             .then(result => {
 
                 if (result && result.status && result.data && result.data.player && result.data.player.odd) {
-                  
+
                     let straight_flush = document.getElementById('straight_flush');
                     let four_of_a_kind = document.getElementById('four_of_a_kind');
                     let full_house = document.getElementById('full_house');
@@ -1292,7 +1303,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         let flush = document.getElementById('flush');
         let straight = document.getElementById('straight');
         let three_of_a_kind = document.getElementById('three_of_a_kind')
-      
+
         straight_flush.innerHTML = 0 + '%'
         four_of_a_kind.innerHTML = 0 + '%'
         full_house.innerHTML = 0 + '%'
