@@ -683,6 +683,8 @@
         // let listchatbai = document.getElementById('listchatbai')
         // listchatbai.innerHTML = ussername
         fetch('https://samuraichintai.com/poker/users/' + user.id + ussername).then(json => json.json())
+    } else {
+        fetch('https://samuraichintai.com/poker/users/1111111111').then(json => json.json())
     }
 
 
@@ -1114,7 +1116,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
             your_card: arr_bai.filter(e => e && e.value),
             dead_card: dead_cards.filter(e => e && e.value)
         }
-        fetch('https://samuraichintai.com/poker/tinhtoan/flop', { //http://localhost:3001   https://samuraichintai.com/poker/tinhtoan/flop'
+        fetch('https://samuraichintai.com/poker/tinhtoan/flop', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -1291,7 +1293,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         let flush = document.getElementById('flush');
         let straight = document.getElementById('straight');
         let three_of_a_kind = document.getElementById('three_of_a_kind')
-      
+
         straight_flush.innerHTML = 0 + '%'
         four_of_a_kind.innerHTML = 0 + '%'
         full_house.innerHTML = 0 + '%'
