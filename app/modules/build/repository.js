@@ -92,6 +92,7 @@ class build_repository {
             //         this.andWhere(db.raw('LOWER(search_key)'), 'like', `%${keyword}%`);
             //     }
             // })
+            .orderBy('id', 'desc')
             .paginate({ perPage: 20, isLengthAware: true, currentPage: page ?? 1 })
 
     }
